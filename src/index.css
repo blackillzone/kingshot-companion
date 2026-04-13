@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bear-orange: #f97316;
+  --color-bear-amber: #f59e0b;
+  --color-inf: #3b82f6;
+  --color-cav: #a855f7;
+  --color-arc: #22c55e;
+}
+
+body {
+  background-color: #030712;
+  color: #f9fafb;
+  -webkit-font-smoothing: antialiased;
+}
