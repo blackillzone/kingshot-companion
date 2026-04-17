@@ -32,7 +32,7 @@ export function UserDataPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto grid gap-4" style={{ gridTemplateColumns: '1fr 500px' }}>
+    <div className="max-w-7xl mx-auto grid gap-4" style={{ gridTemplateColumns: '1fr 420px' }}>
       {/* Colonne gauche : onglets */}
       <div className="col-start-1 row-start-1">
         <GovDataEditor

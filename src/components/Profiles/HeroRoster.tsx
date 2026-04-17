@@ -6,6 +6,55 @@ import { defaultOwnedHeroData } from '../../lib/storage';
 import { X, Info } from 'lucide-react';
 import clsx from 'clsx';
 
+// ─── SlideFilterBar ───────────────────────────────────────────────────────────
+function SlideFilterBar<T extends string>({
+  filters,
+  active,
+  onChange,
+}: {
+  filters: { id: T; label: string; idle: string; active: string }[];
+  active: T;
+  onChange: (id: T) => void;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [indicator, setIndicator] = useState<{ left: number; width: number } | null>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const btn = container.querySelector<HTMLButtonElement>(`[data-id="${active}"]`);
+    if (!btn) return;
+    setIndicator({ left: btn.offsetLeft, width: btn.offsetWidth });
+  }, [active]);
+
+  const activeFilter = filters.find(f => f.id === active)!;
+
+  return (
+    <div ref={containerRef} className="relative flex gap-1">
+      {/* Sliding background */}
+      {indicator && (
+        <span
+          className={clsx('absolute top-0 h-full rounded pointer-events-none transition-all duration-200 ease-out', activeFilter.active)}
+          style={{ left: indicator.left, width: indicator.width }}
+        />
+      )}
+      {filters.map(f => (
+        <button
+          key={f.id}
+          data-id={f.id}
+          onClick={() => onChange(f.id)}
+          className={clsx(
+            'relative z-10 shrink-0 px-3 py-1.5 rounded text-[12px] font-bold uppercase tracking-wide transition-colors duration-150',
+            f.id === active ? 'text-white' : clsx('bg-transparent', f.idle),
+          )}
+        >
+          {f.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 // ─── Tooltip ───────────────────────────────────────────────────────────────────────────
 function Tooltip({ text, children }: { text: string; children: React.ReactNode }) {
   const [visible, setVisible] = useState(false);
@@ -680,71 +729,56 @@ export function HeroRoster({
     <div className="flex flex-col gap-3">
       {/* ── Filter bar ── outside the scroll container so no stacking conflict */}
       <div className="relative z-20 bg-gray-900 rounded-lg border border-gray-800 p-2 space-y-2 shrink-0">
-        {/* Class row */}
-        <div className="flex items-center gap-3">
-          <span className="text-[11px] font-bold text-gray-600 uppercase tracking-widest w-12 shrink-0">Class</span>
-          <div className="flex gap-1 flex-wrap flex-1">
-            {CLASS_FILTERS.map(f => (
-              <button
-                key={f.id}
-                onClick={() => applyFilter(() => setFilterClass(f.id))}
-                className={clsx(
-                  'px-3 py-1.5 rounded text-[13px] font-bold uppercase tracking-wide transition-all duration-150',
-                  filterClass === f.id ? f.active : clsx('bg-transparent', f.idle),
-                )}
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
+        {/* Tooltip — far right of the whole filter block */}
+        <div className="absolute top-3 right-2 z-30">
           <Tooltip text="Click a hero to select it and configure its details.">
             <span
-              className="ml-auto text-gray-600 hover:text-gray-400 cursor-default transition-colors shrink-0"
+              className="text-gray-600 hover:text-gray-400 cursor-default transition-colors"
               aria-label="Click a hero to select it and configure its details."
             >
               <Info size={12} />
             </span>
           </Tooltip>
         </div>
+        {/* Class row */}
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-bold text-gray-600 uppercase tracking-widest w-16 shrink-0">Class</span>
+          <SlideFilterBar
+            filters={CLASS_FILTERS}
+            active={filterClass}
+            onChange={id => applyFilter(() => setFilterClass(id))}
+          />
+        </div>
         {/* Divider */}
         <div className="border-t border-gray-800" />
-        {/* Gen row + select all */}
-        <div className="flex items-center gap-3">
-          <span className="text-[11px] font-bold text-gray-600 uppercase tracking-widest w-12 shrink-0">Season</span>
-          <div className="flex gap-1 flex-wrap flex-1">
-            {GEN_FILTERS.map(f => (
-              <button
-                key={f.id}
-                onClick={() => applyFilter(() => setFilterGen(f.id))}
-                className={clsx(
-                  'px-3 py-1.5 rounded text-[13px] font-bold uppercase tracking-wide transition-all duration-150',
-                  filterGen === f.id ? f.active : clsx('bg-transparent', f.idle),
-                )}
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
-          <div className="flex flex-col items-end justify-end shrink-0 ml-auto">
-            {filteredHeroes.length > 0 && (
-            <button
-              onClick={toggleAllOwned}
-              className={clsx(
-                'shrink-0 ml-auto px-3 py-1.5 rounded text-[13px] font-bold uppercase tracking-wide transition-all duration-150 border',
-                allOwned
-                  ? 'border-orange-600/60 text-orange-400 hover:bg-orange-950/50'
-                  : 'border-gray-700 text-gray-400 hover:border-orange-500/60 hover:text-orange-300 hover:bg-orange-950/30',
-              )}
-            >
-              {allOwned ? 'Deselect all' : 'Select all'}
-            </button>
-            )}
-          </div>
+        {/* Gen row */}
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-bold text-gray-600 uppercase tracking-widest w-16 shrink-0">Season</span>
+          <SlideFilterBar
+            filters={GEN_FILTERS}
+            active={filterGen}
+            onChange={id => applyFilter(() => setFilterGen(id))}
+          />
         </div>
       </div>
 
       {/* ── Hero grid (scrollable) ── */}
-      <div className="overflow-y-auto max-h-[480px] px-1.5 -mx-1.5 pt-1.5 space-y-3">
+      <div className="relative h-[480px]">
+        {/* Floating select all button — absolute over the grid */}
+        {filteredHeroes.length > 0 && (
+          <button
+            onClick={toggleAllOwned}
+            className={clsx(
+              'absolute bottom-3 right-5 z-10 px-4 py-2 rounded-full text-[12px] font-bold uppercase tracking-wide transition-all duration-150 shadow-[0_4px_20px_rgba(0,0,0,0.8)] backdrop-blur-sm',
+              allOwned
+                ? 'bg-orange-950/90 border border-orange-500/70 text-orange-300 hover:bg-orange-900/90'
+                : 'bg-gray-950/95 border border-orange-500/50 text-orange-400 hover:bg-orange-950/80 hover:border-orange-400/70',
+            )}
+          >
+            {allOwned ? 'Deselect all' : 'Select all'}
+          </button>
+        )}
+      <div className="overflow-y-auto h-full px-1.5 -mx-1.5 pt-1.5 space-y-3">
         <div
           key={gridKey}
           className={exiting ? 'hero-grid-exit' : 'hero-grid-enter'}
@@ -781,6 +815,7 @@ export function HeroRoster({
         )}
 
         </div>
+      </div>
       </div>
     </div>
   );
