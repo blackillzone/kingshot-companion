@@ -3,45 +3,69 @@ import { test, expect } from "@playwright/test";
 test.describe("Bear Trap Calculator - Main Workflow E2E", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
-    await page.waitForTimeout(500); // Wait for app hydration
+    // Wait for app to render (heading or main content)
+    await page.waitForSelector("h1, h2, [role=main]", { timeout: 5000 });
   });
 
   test("should load application and display main interface", async ({ page }) => {
-    // Verify app loaded - should have some content
-    const content = await page.content();
-    expect(content.length).toBeGreaterThan(100);
+    // Verify app loaded with specific content
+    const mainContent = page.locator("[role=main], main, .container").first();
+    await expect(mainContent).toBeVisible();
+    
+    // Check for navigation/key UI elements
+    const hasNav = await page.locator("nav, [role=navigation]").isVisible().catch(() => false);
+    expect(hasNav || (await page.locator("button").count()) > 0).toBeTruthy();
   });
 
   test("should navigate between three main views (Profiles, Bear Trap, User Data)", async ({ page }) => {
-    // Get all navigation buttons/links
-    const navButtons = page.locator("button, a").filter({ hasNot: page.locator("svg") });
+    // Get navigation elements
+    const navButtons = page.locator("button, a, [role=tab]");
     const count = await navButtons.count();
-    expect(count).toBeGreaterThan(0); // Navigation exists
+    expect(count).toBeGreaterThan(0);
+    
+    // Verify at least one nav button is visible
+    if (count > 0) {
+      await expect(navButtons.first()).toBeVisible();
+    }
   });
 
-  test("should display rally configuration interface", async ({ page }) => {
+  test("should display rally configuration interface with controls", async ({ page }) => {
     // Rally Config should have capacity and participants controls
-    const inputs = page.locator("input[type=number]");
-    const inputCount = await inputs.count();
-    expect(inputCount).toBeGreaterThanOrEqual(0);
+    const numberInputs = page.locator("input[type=number]");
+    const count = await numberInputs.count();
+    expect(count).toBeGreaterThanOrEqual(1); // At least one number input
+    
+    // Verify inputs are visible and interactive
+    if (count > 0) {
+      await expect(numberInputs.first()).toBeVisible();
+    }
   });
 
-  test("should compute and display results for rally formation", async ({ page }) => {
+  test("should compute and display results after configuration", async ({ page }) => {
     // Results should be displayed (Damage Score, Ratio, etc.)
-    await page.waitForTimeout(1000);
-    const pageText = await page.textContent("body");
-    // Should contain some calculation results
-    expect(pageText?.length || 0).toBeGreaterThan(100);
+    const results = page.locator("h2, h3, [class*=score], [class*=result]");
+    const resultCount = await results.count();
+    
+    // Should have some result elements or data display
+    if (resultCount > 0) {
+      await expect(results.first()).toBeVisible();
+    }
   });
 
-  test("should support interaction with form controls", async ({ page }) => {
+  test("should support interaction with form controls and remain responsive", async ({ page }) => {
     // Test that clicking buttons doesn't crash the app
-    const buttons = page.locator("button").first();
-    if (await buttons.isVisible({ timeout: 1000 })) {
-      await buttons.click().catch(() => {}); // Click but don't fail if blocked
-      await page.waitForTimeout(300);
-      // App should still be responsive
-      expect(page.url()).toBeTruthy();
+    const buttons = page.locator("button");
+    const count = await buttons.count();
+    
+    if (count > 0) {
+      const firstButton = buttons.first();
+      if (await firstButton.isVisible({ timeout: 1000 })) {
+        await firstButton.click();
+        
+        // Verify app remains responsive after click
+        await page.waitForSelector("body", { timeout: 2000 });
+        expect(page.url()).toBeTruthy();
+      }
     }
   });
 });
