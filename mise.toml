@@ -7,10 +7,10 @@ NODE_ENV = "development"
 
 [tools]
 # Node.js version
-node = "22.13.0"
+node = "25.9.0"
 
 # GitHub CLI version
-github-cli = "2.61.0"
+github-cli = "2.90.0"
 
 [tasks]
 # Development server
