@@ -22,7 +22,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci && npx playwright install --with-deps chromium
 
       - name: Lint with Biome
         run: npm run lint:ci
@@ -30,7 +30,7 @@ jobs:
       - name: Run knip checks
         run: npm run knip:ci
 
-      - name: Run unit tests
+      - name: Run tests
         run: npm run test:all
 
       - name: Build
