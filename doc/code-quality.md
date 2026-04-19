@@ -97,10 +97,67 @@ Ces patterns n'impactent pas la performance ou l'accessibilité de manière sign
 }
 ```
 
+---
+
+## 🧪 Testing & Automated Quality Assurance
+
+Le linting par Biome est complété par une suite de tests automatisés intégrée au workflow CI/CD.
+
+### Infrastructure de test
+
+**Vitest (unit + component tests):**
+- 78 tests unitaires (formules, héros, storage)
+- 29 tests de store Zustand
+- 12 tests composants React
+- Coverage: formulas 88%, heroes 100%, storage 96%
+
+**Playwright (E2E tests):**
+- 15 tests du parcours utilisateur complet
+- Automatisation navigateur Chromium
+
+**Total:** 119 tests automatisés = **couverture qualité à chaque commit**
+
+### Intégration CI/CD
+
+Le workflow GitHub Actions exécute les tests **avant chaque déploiement** :
+
+```
+Push main
+  ↓
+Lint (Biome)
+  ↓
+Unit/Component Tests (Vitest)
+  ↓
+Build (TypeScript + Vite)
+  ↓
+Déploiement (si tous passent)
+```
+
+Le déploiement est **bloqué** si l'une de ces étapes échoue. Impossible de déployer du code non-testé.
+
+### Commandes locales
+
+```bash
+# Linting
+npm run lint          # Vérifier
+npm run lint:fix      # Corriger automatiquement
+
+# Tests
+npm test              # Unit + component (rapide)
+npm run test:coverage # Afficher la couverture
+npm run test:watch    # Mode watch (développement)
+
+# E2E
+npm run test:e2e      # Tests browser (nécessite dev server)
+npm run test:all      # Tests complets (unit + E2E)
+```
+
+---
+
 ## 🚀 Prochaines étapes
 
 1. ✅ **Migration Biome complétée** - Linter opérationnel avec 0 erreurs critiques
-2. ⏳ **Optional: Reduce 4 warnings** - Optimisation des patterns avancés
-3. **Intégration CI/CD** - Ajouter `biome ci` au pipeline GitHub Actions
+2. ✅ **Infrastructure de test mise en place** - Tests automatisés + déploiement gardienné
+3. ⏳ **Optional: Reduce 4 warnings** - Optimisation des patterns avancés
 4. **Formatage automatique** - Configurer `biome format --write` avant commit (optionnel)
 5. **Documentation d'équipe** - Former l'équipe aux règles Biome et patterns recommandés

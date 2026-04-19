@@ -48,6 +48,28 @@ Based on battle mechanics research from [Frakinator](https://frakinator.streamli
 cd formation-calculator
 npm install
 npm run dev        # → http://localhost:5173
+```
+
+### Quality Assurance
+
+Before committing, run linting and tests locally:
+
+```bash
+# Linting (Biome)
+npm run lint       # Check for errors
+npm run lint:fix   # Auto-fix fixable errors
+
+# Testing
+npm test           # Unit + component tests (fast)
+npm run test:watch # Watch mode for development
+npm run test:coverage  # See test coverage details
+
+# E2E tests (requires dev server running)
+npm run test:e2e
+
+# All checks in one command
+npm run test:all   # Lint + Unit tests + E2E
+```
 npm run build      # → dist/ (fully static)
 npm run lint       # Check code quality with Biome
 npm run lint:fix   # Auto-fix linting issues

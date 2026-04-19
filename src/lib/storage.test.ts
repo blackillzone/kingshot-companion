@@ -1,0 +1,361 @@
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import {
+  loadProfiles,
+  saveProfiles,
+  createProfile,
+  upsertProfile,
+  deleteProfile,
+  loadActiveProfileId,
+  saveActiveProfileId,
+  exportProfile,
+  importProfileFromJson,
+  defaultStats,
+  defaultWidgets,
+} from "./storage";
+import type { PlayerProfile } from "../types";
+
+// ─── Mock localStorage is configured in src/test/setup.ts ────────────────
+
+beforeEach(() => {
+  // Clear localStorage before each test
+  localStorage.clear();
+});
+
+// ─── createProfile tests ──────────────────────────────────────────────────
+
+describe("createProfile", () => {
+  it("should create a profile with default values", () => {
+    const profile = createProfile("My Profile");
+
+    expect(profile.id).toBeDefined();
+    expect(profile.name).toBe("My Profile");
+    expect(profile.createdAt).toBeDefined();
+    expect(profile.stats).toBeDefined();
+    expect(profile.widgets).toBeDefined();
+    expect(profile.heroes).toBeDefined();
+    expect(profile.troop_tier).toBe("T10");
+    expect(profile.tg_level).toBe(0);
+    expect(profile.rally_capacity).toBe(2_000_000);
+  });
+
+  it("should generate unique IDs", () => {
+    const profile1 = createProfile("Profile 1");
+    const profile2 = createProfile("Profile 2");
+
+    expect(profile1.id).not.toBe(profile2.id);
+  });
+
+  it("should use provided name or default", () => {
+    const named = createProfile("My Profile");
+    expect(named.name).toBe("My Profile");
+
+    const unnamed = createProfile("");
+    expect(unnamed.name).toBe("My Profile"); // Default fallback
+  });
+
+  it("should have default stats all 0", () => {
+    const profile = createProfile("Test");
+    expect(profile.stats.inf_atk).toBe(0);
+    expect(profile.stats.inf_let).toBe(0);
+    expect(profile.stats.cav_atk).toBe(0);
+    expect(profile.stats.cav_let).toBe(0);
+    expect(profile.stats.arc_atk).toBe(0);
+    expect(profile.stats.arc_let).toBe(0);
+  });
+
+  it("should have default widget stats all 0", () => {
+    const profile = createProfile("Test");
+    expect(profile.widgets.inf_atk).toBe(0);
+    expect(profile.widgets.inf_let).toBe(0);
+    expect(profile.widgets.cav_atk).toBe(0);
+    expect(profile.widgets.cav_let).toBe(0);
+    expect(profile.widgets.arc_atk).toBe(0);
+    expect(profile.widgets.arc_let).toBe(0);
+  });
+
+  it("should have default heroes set to 'None'", () => {
+    const profile = createProfile("Test");
+    expect(profile.heroes.inf).toBe("None");
+    expect(profile.heroes.cav).toBe("None");
+    expect(profile.heroes.arc).toBe("None");
+  });
+});
+
+// ─── loadProfiles / saveProfiles tests ────────────────────────────────────
+
+describe("loadProfiles / saveProfiles", () => {
+  it("should return empty array when no profiles exist", () => {
+    const profiles = loadProfiles();
+    expect(profiles).toEqual([]);
+  });
+
+  it("should save and retrieve profiles", () => {
+    const profile1 = createProfile("Profile 1");
+    const profile2 = createProfile("Profile 2");
+
+    saveProfiles([profile1, profile2]);
+
+    const loaded = loadProfiles();
+    expect(loaded).toHaveLength(2);
+    expect(loaded[0].name).toBe("Profile 1");
+    expect(loaded[1].name).toBe("Profile 2");
+  });
+
+  it("should migrate missing fields in loaded profiles", () => {
+    const oldProfile = {
+      id: "test-id",
+      name: "Old Profile",
+      createdAt: "2026-04-19T12:00:00.000Z",
+      stats: defaultStats(),
+      widgets: defaultWidgets(),
+      heroes: { inf: "None", cav: "None", arc: "None" },
+      troop_tier: "T10" as const,
+      tg_level: 0,
+      rally_capacity: 2_000_000,
+      // Missing: widget_levels, ownedHeroes, govGear, govCharmLevel, staticBonuses, troops
+    };
+
+    localStorage.setItem("ks_profiles", JSON.stringify([oldProfile]));
+
+    const loaded = loadProfiles();
+    expect(loaded[0].widget_levels).toBeDefined();
+    expect(loaded[0].ownedHeroes).toBeDefined();
+    expect(loaded[0].govGear).toBeDefined();
+    expect(loaded[0].govCharmLevel).toBeGreaterThanOrEqual(0);
+    expect(loaded[0].staticBonuses).toBeDefined();
+    expect(loaded[0].troops).toBeDefined();
+  });
+
+  it("should handle invalid JSON gracefully", () => {
+    localStorage.setItem("ks_profiles", "invalid json");
+    const profiles = loadProfiles();
+    expect(profiles).toEqual([]);
+  });
+});
+
+// ─── upsertProfile tests ──────────────────────────────────────────────────
+
+describe("upsertProfile", () => {
+  it("should insert a new profile", () => {
+    const profile = createProfile("New Profile");
+    const result = upsertProfile([], profile);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe(profile.id);
+  });
+
+  it("should update an existing profile by id", () => {
+    const profile = createProfile("Original Name");
+    let profiles = upsertProfile([], profile);
+
+    const updated = { ...profile, name: "Updated Name" };
+    profiles = upsertProfile(profiles, updated);
+
+    expect(profiles).toHaveLength(1);
+    expect(profiles[0].name).toBe("Updated Name");
+  });
+
+  it("should remove oldest profile if exceeding MAX_PROFILES (10)", () => {
+    let profiles: PlayerProfile[] = [];
+
+    for (let i = 1; i <= 12; i++) {
+      const profile = createProfile(`Profile ${i}`);
+      profiles = upsertProfile(profiles, profile);
+    }
+
+    expect(profiles).toHaveLength(10);
+    expect(profiles[0].name).toBe("Profile 3"); // First 2 removed (oldest first)
+    expect(profiles[9].name).toBe("Profile 12");
+  });
+
+  it("should preserve order when updating existing profile", () => {
+    const p1 = createProfile("Profile 1");
+    const p2 = createProfile("Profile 2");
+    const p3 = createProfile("Profile 3");
+
+    let profiles = upsertProfile([], p1);
+    profiles = upsertProfile(profiles, p2);
+    profiles = upsertProfile(profiles, p3);
+
+    const updated = { ...p2, name: "Profile 2 Updated" };
+    profiles = upsertProfile(profiles, updated);
+
+    expect(profiles[1].name).toBe("Profile 2 Updated");
+    expect(profiles).toHaveLength(3);
+  });
+});
+
+// ─── deleteProfile tests ──────────────────────────────────────────────────
+
+describe("deleteProfile", () => {
+  it("should delete a profile by id", () => {
+    const p1 = createProfile("Profile 1");
+    const p2 = createProfile("Profile 2");
+    const p3 = createProfile("Profile 3");
+
+    let profiles = [p1, p2, p3];
+
+    profiles = deleteProfile(profiles, p2.id);
+
+    expect(profiles).toHaveLength(2);
+    expect(profiles.find((p) => p.id === p2.id)).toBeUndefined();
+    expect(profiles.find((p) => p.id === p1.id)).toBeDefined();
+    expect(profiles.find((p) => p.id === p3.id)).toBeDefined();
+  });
+
+  it("should not error when deleting non-existent profile", () => {
+    const p1 = createProfile("Profile 1");
+    const profiles = [p1];
+
+    const result = deleteProfile(profiles, "non-existent-id");
+
+    expect(result).toEqual(profiles);
+  });
+
+  it("should be a no-op if profile list is empty", () => {
+    const result = deleteProfile([], "any-id");
+    expect(result).toEqual([]);
+  });
+});
+
+// ─── Active Profile tests ─────────────────────────────────────────────────
+
+describe("loadActiveProfileId / saveActiveProfileId", () => {
+  it("should return null when no active profile is set", () => {
+    const id = loadActiveProfileId();
+    expect(id).toBeNull();
+  });
+
+  it("should save and retrieve active profile id", () => {
+    const testId = "test-profile-id";
+    saveActiveProfileId(testId);
+
+    const retrieved = loadActiveProfileId();
+    expect(retrieved).toBe(testId);
+  });
+
+  it("should overwrite previous active profile id", () => {
+    saveActiveProfileId("first-id");
+    saveActiveProfileId("second-id");
+
+    const retrieved = loadActiveProfileId();
+    expect(retrieved).toBe("second-id");
+  });
+});
+
+// ─── Import / Export tests ────────────────────────────────────────────────
+
+describe("importProfileFromJson / exportProfile", () => {
+  it("should return null for invalid JSON", () => {
+    const result = importProfileFromJson("not json");
+    expect(result).toBeNull();
+  });
+
+  it("should return null if stats or heroes missing", () => {
+    const json = JSON.stringify({ name: "Test Profile" });
+    const result = importProfileFromJson(json);
+    expect(result).toBeNull();
+  });
+
+  it("should create a valid profile from JSON", () => {
+    const original = createProfile("Original");
+    const json = JSON.stringify(original);
+
+    const imported = importProfileFromJson(json);
+
+    expect(imported).not.toBeNull();
+    expect(imported!.name).toBe("Original");
+    expect(imported!.id).not.toBe(original.id); // New ID
+    expect(imported!.stats).toEqual(original.stats);
+  });
+
+  it("should generate new ID on import", () => {
+    const original = createProfile("Test");
+    const originalId = original.id;
+
+    const json = JSON.stringify(original);
+    const imported = importProfileFromJson(json);
+
+    expect(imported!.id).not.toBe(originalId);
+  });
+
+  it("should generate new timestamp on import", () => {
+    const original = createProfile("Test");
+
+    // Add a small delay to ensure timestamp changes
+    const json = JSON.stringify(original);
+    const before = new Date();
+    const imported = importProfileFromJson(json);
+    const after = new Date();
+
+    // Timestamp should be between before and after
+    const importedTime = new Date(imported!.createdAt);
+    expect(importedTime.getTime()).toBeGreaterThanOrEqual(before.getTime());
+    expect(importedTime.getTime()).toBeLessThanOrEqual(after.getTime());
+  });
+
+  it("should use provided name or default on import", () => {
+    const original = createProfile("Custom Name");
+    const json = JSON.stringify(original);
+
+    const imported = importProfileFromJson(json);
+    expect(imported!.name).toBe("Custom Name");
+
+    // Test with no name
+    const noName = {
+      stats: defaultStats(),
+      heroes: { inf: "None", cav: "None", arc: "None" },
+    };
+    const noNameImported = importProfileFromJson(JSON.stringify(noName));
+    expect(noNameImported!.name).toBe("Imported Profile");
+  });
+
+  it("exportProfile should not error (side effect test)", () => {
+    // exportProfile uses browser API, mock it
+    const mockAnchor = document.createElement("a");
+    const originalHref = Object.getOwnPropertyDescriptor(
+      HTMLAnchorElement.prototype,
+      "href",
+    );
+    const originalClick = mockAnchor.click;
+
+    vi.spyOn(document, "createElement").mockReturnValue(mockAnchor);
+    mockAnchor.click = vi.fn();
+    globalThis.URL.revokeObjectURL = vi.fn();
+
+    const profile = createProfile("Test Profile");
+
+    // Should not throw
+    expect(() => {
+      exportProfile(profile);
+    }).not.toThrow();
+
+    // Restore
+    Object.defineProperty(HTMLAnchorElement.prototype, "href", originalHref!);
+    mockAnchor.click = originalClick;
+  });
+});
+
+// ─── Default functions tests ──────────────────────────────────────────────
+
+describe("default* functions", () => {
+  it("defaultStats should return all zeros", () => {
+    const stats = defaultStats();
+    expect(stats.inf_atk).toBe(0);
+    expect(stats.inf_let).toBe(0);
+    expect(stats.cav_atk).toBe(0);
+    expect(stats.cav_let).toBe(0);
+    expect(stats.arc_atk).toBe(0);
+    expect(stats.arc_let).toBe(0);
+  });
+
+  it("defaultWidgets should return all zeros", () => {
+    const widgets = defaultWidgets();
+    expect(widgets.inf_atk).toBe(0);
+    expect(widgets.inf_let).toBe(0);
+    expect(widgets.cav_atk).toBe(0);
+    expect(widgets.cav_let).toBe(0);
+    expect(widgets.arc_atk).toBe(0);
+    expect(widgets.arc_let).toBe(0);
+  });
+});

@@ -178,12 +178,58 @@ import { Lightbulb } from 'lucide-react';
 
 ---
 
+## Testing
+
+### Vitest + @testing-library
+
+**Pourquoi Vitest ?**
+- Intégration native avec Vite (même config, même vitesse)
+- API compatible Jest — migration facile si besoin
+- Support jsdom pour tests React côté serveur
+- Couverture de code avec v8 intégrée
+
+**Scope des tests :**
+- **Unit tests (78)** : Fonctions pures de `formulas.ts`, `heroes.ts`, `storage.ts`
+- **Store tests (29)** : Zustand store avec persistance localStorage
+- **Component tests (12)** : Composants React critiques avec @testing-library
+- **Total:** 119 tests unitaires/intégration
+
+**Commandes :**
+```bash
+npm test              # Exécuter les tests une fois
+npm run test:watch    # Mode watch (re-run on file change)
+npm run test:coverage # Afficher la couverture (targets: formulas 88%, heroes 100%, storage 96%)
+```
+
+### Playwright
+
+**Pourquoi Playwright ?**
+- Tests E2E multi-navigateur (chromium, firefox, webkit)
+- Configuration minimale, pas de dépendances système complexes
+- Automatisation rapide et fiable
+
+**Scope des tests E2E (15) :**
+- **bear-trap-calculator.spec.ts** : Parcours utilisateur complet (stats → rally config → résultats)
+- **profiles.spec.ts** : Gestion des profils (création, sauvegarde, suppression)
+- **user-data.spec.ts** : Édition des données utilisateur
+
+**Commandes :**
+```bash
+npm run test:e2e      # Exécuter les tests E2E (nécessite dev server)
+npm run test:all      # Tests unitaires + E2E
+```
+
+**Configuration:** `playwright.config.ts` — baseURL pointant vers le port dev local, Chromium uniquement (suffisant pour une SPA).
+
+---
+
 ## Dépendances de développement
 
 | Package | Rôle |
 |---|---|
 | `@vitejs/plugin-react` | Support JSX/Fast Refresh pour React dans Vite |
 | `@tailwindcss/vite` | Intégration Tailwind v4 dans le pipeline Vite |
-| `eslint` + `eslint-plugin-react-hooks` | Linting — détection des règles des hooks |
-| `typescript-eslint` | Linting TypeScript |
+| `vitest`, `@vitest/coverage-v8` | Test runner + couverture de code |
+| `@testing-library/react`, `jsdom` | Tests composants React en jsdom |
+| `@playwright/test` | Tests E2E multi-navigateur |
 | `@types/react`, `@types/react-dom` | Types TypeScript pour React |

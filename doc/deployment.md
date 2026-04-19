@@ -23,16 +23,18 @@ Le déploiement est entièrement automatisé. À chaque push sur `main`, le work
 ### Fichier de workflow
 `.github/workflows/deploy.yml`
 
+Le workflow CI/CD exécute une pipeline de qualité avant tout déploiement :
+
 ```yaml
 name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [main]
-  workflow_dispatch:          # Permet un déclenchement manuel depuis l'UI GitHub
+  workflow_dispatch:
 
 permissions:
-  contents: write             # Nécessaire pour pousser sur gh-pages
+  contents: write
 
 jobs:
   deploy:
@@ -44,13 +46,24 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: npm run build
+      
+      - name: Lint with Biome
+        run: npm run lint
+      
+      - name: Run unit tests
+        run: npm run test
+      
+      - name: Build
+        run: npm run build
+      
       - uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: dist
           branch: gh-pages
           clean: true
 ```
+
+**Pipeline de qualité :** Le déploiement n'est possible que si ✅ Lint, ✅ Tests, ✅ Build tous réussissent.
 
 ### Action utilisée
 [JamesIves/github-pages-deploy-action@v4](https://github.com/JamesIves/github-pages-deploy-action) — déploie un dossier local sur une branche GitHub.
