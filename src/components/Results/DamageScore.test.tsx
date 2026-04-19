@@ -3,9 +3,11 @@ import { render, screen } from "@testing-library/react";
 import { DamageScore } from "./DamageScore";
 import { useRallyStore } from "../../store/useRallyStore";
 import { computeFormation } from "../../lib/formulas";
+import { resetStore } from "../../test/storeFixture";
 
 describe("DamageScore", () => {
   beforeEach(() => {
+    resetStore();
     localStorage.clear();
     // Initialize store with complete state
     useRallyStore.setState({

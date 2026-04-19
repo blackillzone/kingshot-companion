@@ -3,9 +3,11 @@ import { render, screen } from "@testing-library/react";
 import { TroopTable } from "./TroopTable";
 import { useRallyStore } from "../../store/useRallyStore";
 import { computeFormation } from "../../lib/formulas";
+import { resetStore } from "../../test/storeFixture";
 
 describe("TroopTable", () => {
   beforeEach(() => {
+    resetStore();
     localStorage.clear();
     useRallyStore.setState({
       activeProfile: null,

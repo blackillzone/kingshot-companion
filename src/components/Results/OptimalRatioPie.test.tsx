@@ -3,9 +3,11 @@ import { render } from "@testing-library/react";
 import { OptimalRatioPie } from "./OptimalRatioPie";
 import { useRallyStore } from "../../store/useRallyStore";
 import { computeFormation } from "../../lib/formulas";
+import { resetStore } from "../../test/storeFixture";
 
 describe("OptimalRatioPie", () => {
   beforeEach(() => {
+    resetStore();
     localStorage.clear();
     useRallyStore.setState({
       activeProfile: null,

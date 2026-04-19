@@ -4,9 +4,11 @@ import userEvent from "@testing-library/user-event";
 import { StatsForm } from "./StatsForm";
 import { useRallyStore } from "../../store/useRallyStore";
 import { createProfile } from "../../lib/storage";
+import { resetStore } from "../../test/storeFixture";
 
 describe("StatsForm", () => {
   beforeEach(() => {
+    resetStore();
     localStorage.clear();
     const profile = createProfile("Test Profile");
     useRallyStore.setState({

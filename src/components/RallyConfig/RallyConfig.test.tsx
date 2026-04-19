@@ -3,9 +3,11 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { RallyConfig } from "./RallyConfig";
 import { useRallyStore } from "../../store/useRallyStore";
+import { resetStore } from "../../test/storeFixture";
 
 describe("RallyConfig", () => {
   beforeEach(() => {
+    resetStore();
     localStorage.clear();
     useRallyStore.setState({
       rallyConfig: {
