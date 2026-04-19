@@ -275,4 +275,68 @@ describe("getJoinerLetAllBonus", () => {
     const bonus = getJoinerLetAllBonus(joiners);
     expect(bonus).toBe(25); // Amadeus has +25% let_all at lv5
   });
+
+  it("should handle invalid hero key gracefully (branch: !hero)", () => {
+    const joiners: JoinerSlot[] = [
+      { hero: "InvalidHero" as HeroName, skillLevel: 5 },
+      { hero: "Chenko", skillLevel: 3 },
+    ];
+    const bonus = getJoinerLetAllBonus(joiners);
+    expect(bonus).toBe(15); // Only valid Chenko bonus
+  });
+});
+
+// ─── getJoinerAtkAllBonus - invalid hero branch coverage ────────────────
+
+describe("getJoinerAtkAllBonus - edge cases", () => {
+  it("should handle invalid hero key gracefully (branch: !hero)", () => {
+    const joiners: JoinerSlot[] = [
+      { hero: "InvalidHero" as HeroName, skillLevel: 5 },
+      { hero: "Amane", skillLevel: 2 },
+    ];
+    const bonus = getJoinerAtkAllBonus(joiners);
+    expect(bonus).toBe(10); // Only valid Amane bonus
+  });
+
+  it("should handle skillLevel out of bounds with nullish coalescing", () => {
+    const joiners: JoinerSlot[] = [
+      { hero: "Amane", skillLevel: 99 }, // Out of bounds
+    ];
+    const bonus = getJoinerAtkAllBonus(joiners);
+    expect(bonus).toBe(0); // No bonus for invalid level
+  });
+
+  it("should skip atk_all heroes when calculating let_all (branch: bonus_type !== let_all)", () => {
+    const joiners: JoinerSlot[] = [
+      { hero: "Amane", skillLevel: 5 }, // atk_all bonus - should be skipped for let_all
+      { hero: "Chenko", skillLevel: 3 },  // let_all bonus - should be counted
+    ];
+    const letBonus = getJoinerLetAllBonus(joiners);
+    expect(letBonus).toBe(15); // Only Chenko's +15%, Amane skipped
+  });
+
+  it("should skip let_all heroes when calculating atk_all (branch: bonus_type !== atk_all)", () => {
+    const joiners: JoinerSlot[] = [
+      { hero: "Chenko", skillLevel: 5 }, // let_all bonus - should be skipped for atk_all
+      { hero: "Amane", skillLevel: 3 },  // atk_all bonus - should be counted
+    ];
+    const atkBonus = getJoinerAtkAllBonus(joiners);
+    expect(atkBonus).toBe(15); // Only Amane's +15%, Chenko skipped
+  });
+
+  it("should handle out-of-bounds skillLevel for let_all hero (branch: ?? 0)", () => {
+    const joiners: JoinerSlot[] = [
+      { hero: "Chenko", skillLevel: 99 }, // Out of bounds - nullish coalescing should return 0
+    ];
+    const bonus = getJoinerLetAllBonus(joiners);
+    expect(bonus).toBe(0); // No bonus for invalid level
+  });
+
+  it("should handle out-of-bounds skillLevel for atk_all hero (branch: ?? 0)", () => {
+    const joiners: JoinerSlot[] = [
+      { hero: "Amane", skillLevel: 99 }, // Out of bounds - nullish coalescing should return 0
+    ];
+    const bonus = getJoinerAtkAllBonus(joiners);
+    expect(bonus).toBe(0); // No bonus for invalid level
+  });
 });

@@ -14,6 +14,7 @@ import {
   CURRENT_PROFILE_VERSION,
   defaultStats,
   defaultWidgets,
+  defaultOwnedHeroData,
 } from "./storage";
 import type { PlayerProfile } from "../types";
 
@@ -334,7 +335,9 @@ describe("importProfileFromJson / exportProfile", () => {
     }).not.toThrow();
 
     // Restore
-    Object.defineProperty(HTMLAnchorElement.prototype, "href", originalHref!);
+    if (originalHref) {
+      Object.defineProperty(HTMLAnchorElement.prototype, "href", originalHref);
+    }
     mockAnchor.click = originalClick;
   });
 });
@@ -463,5 +466,137 @@ describe("importProfileFromJson — corrupted input", () => {
     const imported = importProfileFromJson(json);
     expect(imported).not.toBeNull();
     expect(imported?.id).not.toBe(original.id);
+  });
+});
+
+// ─── validateProfile — branch coverage (corrupted data) ────────────────────
+
+describe("validateProfile - error handling (catch block)", () => {
+  it("should return null for profile missing both stats and heroes", () => {
+    const result = validateProfile({ name: "Invalid" });
+    expect(result).toBeNull();
+  });
+
+  it("should return null when stats is null", () => {
+    const result = validateProfile({ stats: null, heroes: {} });
+    expect(result).toBeNull();
+  });
+
+  it("should return null when heroes is null", () => {
+    const result = validateProfile({ stats: {}, heroes: null });
+    expect(result).toBeNull();
+  });
+
+  it("should gracefully handle corrupted profile data", () => {
+    // Profile with missing required nested fields
+    const result = validateProfile({
+      stats: {},  // Empty stats (will fail migration)
+      heroes: {},  // Empty heroes  
+      id: "test",
+      name: "Corrupted",
+    });
+    // Should either migrate with defaults or return null
+    expect(result === null || result?._version).toBeDefined();
+  });
+});
+
+// ─── loadProfiles — branch coverage (corrupted localStorage) ───────────────
+
+describe("loadProfiles - corrupted localStorage", () => {
+  it("should return empty array when localStorage contains invalid JSON", () => {
+    localStorage.setItem("ks_profiles", "{invalid json");
+    const profiles = loadProfiles();
+    expect(profiles).toEqual([]);
+  });
+
+  it("should filter out invalid profiles and keep valid ones", () => {
+    const mixed = [
+      createProfile("Valid 1"),
+      { name: "Invalid - missing stats" },
+      createProfile("Valid 2"),
+      { name: "Invalid - missing heroes" },
+    ];
+    localStorage.setItem("ks_profiles", JSON.stringify(mixed));
+    
+    const profiles = loadProfiles();
+    expect(profiles).toHaveLength(2);
+    expect(profiles.map((p) => p.name)).toEqual(["Valid 1", "Valid 2"]);
+  });
+
+  it("should return empty array when localStorage has no profiles", () => {
+    localStorage.removeItem("ks_profiles");
+    const profiles = loadProfiles();
+    expect(profiles).toEqual([]);
+  });
+
+  it("should handle localStorage.getItem returning null", () => {
+    // This is implicit when item doesn't exist
+    localStorage.removeItem("ks_profiles");
+    expect(loadProfiles()).toEqual([]);
+  });
+});
+
+// ─── defaultOwnedHeroData — branch coverage (default values) ───────────────
+
+describe("defaultOwnedHeroData", () => {
+  it("should return correct default owned hero data", () => {
+    const data = defaultOwnedHeroData();
+    expect(data.owned).toBe(false);
+    expect(data.level).toBe(1);
+    expect(data.stars).toBe(0);
+    expect(data.starSubLevel).toBe(1);
+    expect(data.widgetLevel).toBe(0);
+    expect(data.gear).toBeDefined();
+    expect(data.gear.helm.level).toBe(0);
+    expect(data.gear.gloves.masteryLevel).toBe(0);
+  });
+});
+
+// ─── migrateProfile — nullish coalescing branches ──────────────────────────────
+
+describe("migrateProfile - nullish coalescing branches", () => {
+  it("should use defaultStats when stats is undefined or null (branch: ?? defaultStats())", () => {
+    const raw: Record<string, unknown> = {
+      stats: undefined, // undefined triggers ??
+      heroes: { inf: "None", cav: "None", arc: "None" },
+      id: "test-id",
+      name: "Test",
+      createdAt: "2024-01-01",
+    };
+    const result = migrateProfile(raw);
+    expect(result.stats).toBeDefined();
+    expect(result.stats.inf_atk).toBe(0); // defaultStats() was used
+  });
+
+  it("should use default heroes when heroes is undefined or null (branch: ?? {...})", () => {
+    const raw: Record<string, unknown> = {
+      stats: { inf_atk: 0, inf_let: 0, cav_atk: 0, cav_let: 0, arc_atk: 0, arc_let: 0 },
+      heroes: undefined, // undefined triggers ??
+      id: "test-id",
+      name: "Test",
+      createdAt: "2024-01-01",
+    };
+    const result = migrateProfile(raw);
+    expect(result.heroes).toBeDefined();
+    expect(result.heroes.inf).toBe("None"); // default heroes was used
+  });
+});
+
+// ─── validateProfile — object type checking (branch coverage) ──────────────────
+
+describe("validateProfile - object type checking", () => {
+  it("should accept valid objects and proceed to validation (branch: typeof data === object)", () => {
+    const profile = createProfile("Test");
+    const result = validateProfile(profile);
+    expect(result).not.toBeNull();
+    expect(result?.name).toBe("Test");
+  });
+
+  it("should reject non-objects (branch: !data || typeof data !== object)", () => {
+    expect(validateProfile(null)).toBeNull();
+    expect(validateProfile(undefined)).toBeNull();
+    expect(validateProfile("string")).toBeNull();
+    expect(validateProfile(123)).toBeNull();
+    expect(validateProfile([])).toBeNull();
   });
 });
