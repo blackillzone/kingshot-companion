@@ -58,7 +58,7 @@ describe("DamageScore", () => {
   it("should render damage score with title and value", () => {
     const { container } = render(<DamageScore />);
     expect(container.querySelector("h2")).toBeDefined();
-    
+
     // Verify result exists with score data
     const result = useRallyStore.getState().result;
     expect(result).not.toBeNull();
@@ -70,7 +70,7 @@ describe("DamageScore", () => {
     render(<DamageScore />);
     const percentageText = screen.getByText(/\+/);
     expect(percentageText).toBeDefined();
-    
+
     // Verify the score values are numeric
     const result = useRallyStore.getState().result;
     if (result) {

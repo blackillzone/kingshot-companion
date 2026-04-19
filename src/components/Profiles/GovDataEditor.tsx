@@ -25,7 +25,8 @@ function GovernorGearEditor() {
     <div className="space-y-4">
       <SectionCard title="Équipement gouverneur">
         <p className="text-xs text-amber-500/80 bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-2 mb-3">
-          Ces données sont enregistrées pour une future version du calculateur et n'influencent pas encore le résultat actuel.
+          Ces données sont enregistrées pour une future version du calculateur
+          et n'influencent pas encore le résultat actuel.
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {HERO_GEAR_SLOTS.map((slot) => (
@@ -81,14 +82,17 @@ export function GovDataEditor({
           <HeroRoster
             selectedHero={selectedHero}
             setSelectedHero={setSelectedHero}
-            {...(onFilteredHeroesChange !== undefined ? { onFilteredHeroesChange } : {})}
+            {...(onFilteredHeroesChange !== undefined
+              ? { onFilteredHeroesChange }
+              : {})}
           />
         )}
         {activeTab === "gov-gear" && <GovernorGearEditor />}
         {activeTab === "static-stats" && (
           <SectionCard title="Stats statiques">
             <p className="text-xs text-amber-500/80 bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-2 mb-3">
-              Ces données sont enregistrées pour une future version du calculateur et n'influencent pas encore le résultat actuel.
+              Ces données sont enregistrées pour une future version du
+              calculateur et n'influencent pas encore le résultat actuel.
             </p>
             <StaticStatsEditor />
           </SectionCard>
@@ -96,7 +100,8 @@ export function GovDataEditor({
         {activeTab === "troops" && (
           <SectionCard title="Inventaire de troupes">
             <p className="text-xs text-amber-500/80 bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-2 mb-3">
-              Ces données sont enregistrées pour une future version du calculateur et n'influencent pas encore le résultat actuel.
+              Ces données sont enregistrées pour une future version du
+              calculateur et n'influencent pas encore le résultat actuel.
             </p>
             <TroopEditor />
           </SectionCard>

@@ -26,16 +26,17 @@ describe("RallyConfig", () => {
   it("should render form and allow updating participants", () => {
     const { container } = render(<RallyConfig />);
     expect(container).toBeDefined();
-    
+
     // Get initial participants count
-    const initialParticipants = useRallyStore.getState().rallyConfig.participants;
+    const initialParticipants =
+      useRallyStore.getState().rallyConfig.participants;
     expect(initialParticipants).toBe(3);
   });
 
   it("should display capacity and participants fields", () => {
     const { container } = render(<RallyConfig />);
     expect(container).toBeDefined();
-    
+
     // Verify form structure exists with inputs
     const inputs = container.querySelectorAll("input[type='number']");
     expect(inputs.length).toBeGreaterThan(0);
@@ -45,6 +46,6 @@ describe("RallyConfig", () => {
     render(<RallyConfig />);
     const initialJoiners = useRallyStore.getState().rallyConfig.joiners;
     expect(initialJoiners).toHaveLength(4);
-    expect(initialJoiners.every(j => j.hero === "None")).toBe(true);
+    expect(initialJoiners.every((j) => j.hero === "None")).toBe(true);
   });
 });

@@ -150,7 +150,8 @@ describe("useRallyStore - updateProfile", () => {
     if (saved) {
       const profiles = JSON.parse(saved);
       const active = profiles.find(
-        (p: Record<string, unknown>) => p.id === useRallyStore.getState().activeProfileId,
+        (p: Record<string, unknown>) =>
+          p.id === useRallyStore.getState().activeProfileId,
       );
       expect(active?.stats?.inf_atk).toBe(150);
     }
@@ -172,7 +173,9 @@ describe("useRallyStore - removeProfile", () => {
 
     const updated = useRallyStore.getState();
     expect(updated.profiles.length).toBe(count - 1);
-    expect(updated.profiles.find((p) => p.id === profileIdToRemove)).toBeUndefined();
+    expect(
+      updated.profiles.find((p) => p.id === profileIdToRemove),
+    ).toBeUndefined();
   });
 
   it("should switch to another profile when removing active profile", () => {
@@ -426,7 +429,9 @@ describe("useRallyStore - integration scenarios", () => {
     expect(saved).not.toBeNull();
     if (saved) {
       const profiles = JSON.parse(saved);
-      expect(profiles.some((p: Record<string, unknown>) => p.name === profileName)).toBe(true);
+      expect(
+        profiles.some((p: Record<string, unknown>) => p.name === profileName),
+      ).toBe(true);
     }
 
     const savedActiveId = localStorage.getItem("ks_active_profile");

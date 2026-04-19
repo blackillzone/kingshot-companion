@@ -58,7 +58,7 @@ describe("TroopTable", () => {
     render(<TroopTable />);
     const table = screen.getByRole("table");
     expect(table).toBeDefined();
-    
+
     // Verify result has distribution data
     const result = useRallyStore.getState().result;
     expect(result).not.toBeNull();
@@ -70,7 +70,7 @@ describe("TroopTable", () => {
 
   it("should display troop type rows with correct structure", () => {
     render(<TroopTable />);
-    
+
     // Check for troop type headers
     expect(screen.getByText("Infantry")).toBeDefined();
     expect(screen.getByText("Cavalry")).toBeDefined();

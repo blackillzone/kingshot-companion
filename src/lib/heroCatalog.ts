@@ -88,7 +88,11 @@ export const WIDGET_NAME: Partial<Record<HeroName, string>> = {
 
 // ─── Groupes d'affichage ──────────────────────────────────────────────────────
 
-export const HERO_GROUPS: { label: string; accent: string; heroes: HeroName[] }[] = [
+export const HERO_GROUPS: {
+  label: string;
+  accent: string;
+  heroes: HeroName[];
+}[] = [
   {
     label: "Infantry",
     accent: "text-red-400",
@@ -149,7 +153,9 @@ export function heroGenOrder(gen: string | number | null): number {
 }
 
 /** Tous les héros triés : Rare → Epic → S1 → S2 → S3 → S4 → S5, puis alpha */
-export const ALL_HEROES_SORTED: HeroName[] = (Object.keys(HERO_DB) as HeroName[])
+export const ALL_HEROES_SORTED: HeroName[] = (
+  Object.keys(HERO_DB) as HeroName[]
+)
   .filter((n) => n !== "None" && n !== "Other")
   .sort((a, b) => {
     const ga = heroGenOrder(HERO_DB[a].generation);

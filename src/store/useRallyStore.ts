@@ -112,7 +112,8 @@ export const useRallyStore = create<RallyStore>()(
       throw new Error("Unable to set active profile ID");
     }
 
-    const activeProfile = initialProfiles.find((p) => p.id === activeId) ?? initialProfiles.at(0);
+    const activeProfile =
+      initialProfiles.find((p) => p.id === activeId) ?? initialProfiles.at(0);
     if (!activeProfile) throw new Error("Unable to find active profile");
 
     return {

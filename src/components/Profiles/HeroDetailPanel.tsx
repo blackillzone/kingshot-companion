@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { HERO_DB } from "../../lib/heroes";
-import { HERO_IMG, GX_HEROES, WIDGET_IMG, WIDGET_NAME } from "../../lib/heroCatalog";
+import {
+  HERO_IMG,
+  GX_HEROES,
+  WIDGET_IMG,
+  WIDGET_NAME,
+} from "../../lib/heroCatalog";
 import type { HeroName, OwnedHeroData, HeroGearSlot } from "../../types";
 import { X } from "lucide-react";
 import clsx from "clsx";
@@ -131,7 +136,9 @@ function StarIcon({
                       ? `url(#${previewGradId})`
                       : "#1f2937"
                 }
-                stroke={isFilled ? "#ea580c" : isPreview ? "#fb923c66" : "#374151"}
+                stroke={
+                  isFilled ? "#ea580c" : isPreview ? "#fb923c66" : "#374151"
+                }
                 strokeWidth={0.8}
                 style={{ transition: "fill 80ms" }}
               />

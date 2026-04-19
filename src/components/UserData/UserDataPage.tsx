@@ -14,13 +14,8 @@ export function UserDataPage() {
   const userDataTab = useRallyStore((s) => s.userDataTab);
 
   const [navHeroes, setNavHeroes] = useState<HeroName[]>([]);
-  const {
-    selectedHero,
-    renderedHero,
-    panelState,
-    panelDx,
-    handleSelectHero,
-  } = useAnimatedHeroPanel();
+  const { selectedHero, renderedHero, panelState, panelDx, handleSelectHero } =
+    useAnimatedHeroPanel();
 
   if (!activeProfile) {
     return (

@@ -368,7 +368,9 @@ describe("computeParticipantCurve", () => {
     );
 
     // Damage should generally increase as we can fill more of the capacity
-    expect(curve[14]?.damageScore ?? -Infinity).toBeGreaterThan(curve[0]?.damageScore ?? -Infinity);
+    expect(curve[14]?.damageScore ?? -Infinity).toBeGreaterThan(
+      curve[0]?.damageScore ?? -Infinity,
+    );
   });
 
   it("fillRate should be <= 1", () => {

@@ -309,7 +309,7 @@ describe("getJoinerAtkAllBonus - edge cases", () => {
   it("should skip atk_all heroes when calculating let_all (branch: bonus_type !== let_all)", () => {
     const joiners: JoinerSlot[] = [
       { hero: "Amane", skillLevel: 5 }, // atk_all bonus - should be skipped for let_all
-      { hero: "Chenko", skillLevel: 3 },  // let_all bonus - should be counted
+      { hero: "Chenko", skillLevel: 3 }, // let_all bonus - should be counted
     ];
     const letBonus = getJoinerLetAllBonus(joiners);
     expect(letBonus).toBe(15); // Only Chenko's +15%, Amane skipped
@@ -318,7 +318,7 @@ describe("getJoinerAtkAllBonus - edge cases", () => {
   it("should skip let_all heroes when calculating atk_all (branch: bonus_type !== atk_all)", () => {
     const joiners: JoinerSlot[] = [
       { hero: "Chenko", skillLevel: 5 }, // let_all bonus - should be skipped for atk_all
-      { hero: "Amane", skillLevel: 3 },  // atk_all bonus - should be counted
+      { hero: "Amane", skillLevel: 3 }, // atk_all bonus - should be counted
     ];
     const atkBonus = getJoinerAtkAllBonus(joiners);
     expect(atkBonus).toBe(15); // Only Amane's +15%, Chenko skipped

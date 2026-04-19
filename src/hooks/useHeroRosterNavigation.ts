@@ -43,7 +43,8 @@ export function useHeroRosterNavigation(
         const card = document.querySelector(`[data-hero="${selectedHero}"]`);
         const grid = card?.closest(".hero-cols-grid") as HTMLElement | null;
         const cols = grid
-          ? getComputedStyle(grid).gridTemplateColumns.trim().split(/\s+/).length
+          ? getComputedStyle(grid).gridTemplateColumns.trim().split(/\s+/)
+              .length
           : 4;
         if (e.key === "ArrowUp" && idx - cols >= 0) {
           const up = heroes.at(idx - cols);

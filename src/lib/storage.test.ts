@@ -453,13 +453,15 @@ describe("importProfileFromJson — corrupted input", () => {
 
   it("should return null for JSON primitives (not an object)", () => {
     expect(importProfileFromJson("42")).toBeNull(); // number
-    expect(importProfileFromJson('"string"')).toBeNull(); // string  
+    expect(importProfileFromJson('"string"')).toBeNull(); // string
     expect(importProfileFromJson("true")).toBeNull(); // boolean
     expect(importProfileFromJson("null")).toBeNull(); // null
   });
 
   it("should return null for JSON without required fields", () => {
-    expect(importProfileFromJson(JSON.stringify({ name: "Only name" }))).toBeNull();
+    expect(
+      importProfileFromJson(JSON.stringify({ name: "Only name" })),
+    ).toBeNull();
   });
 
   it("should not crash on a malformed but parseable object", () => {
@@ -497,8 +499,8 @@ describe("validateProfile - error handling (catch block)", () => {
   it("should gracefully handle corrupted profile data", () => {
     // Profile with missing required nested fields
     const result = validateProfile({
-      stats: {},  // Empty stats (will fail migration)
-      heroes: {},  // Empty heroes  
+      stats: {}, // Empty stats (will fail migration)
+      heroes: {}, // Empty heroes
       id: "test",
       name: "Corrupted",
     });
@@ -524,7 +526,7 @@ describe("loadProfiles - corrupted localStorage", () => {
       { name: "Invalid - missing heroes" },
     ];
     localStorage.setItem("ks_profiles", JSON.stringify(mixed));
-    
+
     const profiles = loadProfiles();
     expect(profiles).toHaveLength(2);
     expect(profiles.map((p) => p.name)).toEqual(["Valid 1", "Valid 2"]);
@@ -577,7 +579,14 @@ describe("migrateProfile - nullish coalescing branches", () => {
 
   it("should use default heroes when heroes is undefined or null (branch: ?? {...})", () => {
     const raw: Record<string, unknown> = {
-      stats: { inf_atk: 0, inf_let: 0, cav_atk: 0, cav_let: 0, arc_atk: 0, arc_let: 0 },
+      stats: {
+        inf_atk: 0,
+        inf_let: 0,
+        cav_atk: 0,
+        cav_let: 0,
+        arc_atk: 0,
+        arc_let: 0,
+      },
       heroes: undefined, // undefined triggers ??
       id: "test-id",
       name: "Test",

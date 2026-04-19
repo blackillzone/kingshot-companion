@@ -11,7 +11,7 @@ describe("JoinerRecommender", () => {
   beforeEach(() => {
     resetStore();
     localStorage.clear();
-    
+
     // Create a valid PlayerProfile for store state
     const profile = {
       ...createProfile("Test"),
@@ -25,7 +25,7 @@ describe("JoinerRecommender", () => {
         arc_let: 100,
       },
     };
-    
+
     // Initialize store with valid data for recommendations
     useRallyStore.setState({
       activeProfile: profile,
@@ -94,14 +94,16 @@ describe("JoinerRecommender", () => {
   it("should render recommendation table or list structure", () => {
     const { container } = render(<JoinerRecommender />);
     // Should have table rows or recommendation cards
-    const rows = container.querySelectorAll("tr, [role=listitem], [class*=card], [class*=row]");
+    const rows = container.querySelectorAll(
+      "tr, [role=listitem], [class*=card], [class*=row]",
+    );
     expect(rows.length).toBeGreaterThanOrEqual(0);
   });
 
   it("should show current score comparison", () => {
     const { container } = render(<JoinerRecommender />);
     expect(container).toBeDefined();
-    
+
     // Verify recommendations are computed
     const store = useRallyStore.getState();
     expect(store.rallyConfig.joiners).toHaveLength(4);
@@ -110,11 +112,11 @@ describe("JoinerRecommender", () => {
   it("should render clickable recommendation items", async () => {
     const user = userEvent.setup();
     const { container } = render(<JoinerRecommender />);
-    
+
     // Find buttons in recommendation table (apply buttons)
     const buttons = container.querySelectorAll("button");
     expect(buttons.length).toBeGreaterThanOrEqual(0);
-    
+
     // If buttons exist, they should be clickable
     if (buttons.length > 0) {
       const firstButton = buttons[0] as HTMLButtonElement;
@@ -136,7 +138,7 @@ describe("JoinerRecommender", () => {
   it("should not crash with default joiner setup", () => {
     const { container } = render(<JoinerRecommender />);
     expect(container).toBeDefined();
-    
+
     // Component should render without errors
     const store = useRallyStore.getState();
     expect(store.rallyConfig).toBeDefined();
@@ -144,9 +146,11 @@ describe("JoinerRecommender", () => {
 
   it("should mark current configuration when selected", () => {
     const { container } = render(<JoinerRecommender />);
-    
+
     // If current combo is highlighted, it should be marked visually
-    const highlighted = container.querySelector("[class*=selected], [class*=active], [class*=current]");
+    const highlighted = container.querySelector(
+      "[class*=selected], [class*=active], [class*=current]",
+    );
     // May or may not exist depending on whether current is in top 3
     expect(highlighted === null || highlighted).toBeTruthy();
   });

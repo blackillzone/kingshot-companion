@@ -57,7 +57,7 @@ describe("OptimalRatioPie", () => {
   it("should render chart with valid result and troop ratio data", () => {
     const { container } = render(<OptimalRatioPie />);
     expect(container).toBeDefined();
-    
+
     // Verify result exists with ratio data
     const result = useRallyStore.getState().result;
     expect(result).not.toBeNull();

@@ -21,7 +21,7 @@ export function resetStore(): void {
   // Load initial state from localStorage or use defaults
   const stored = localStorage.getItem("ks_profiles");
   const activeProfileId = localStorage.getItem("ks_active_profile");
-  
+
   // Reset to initial state
   useRallyStore.setState({
     profiles: stored ? JSON.parse(stored) : [],
@@ -38,7 +38,9 @@ export function captureStoreState() {
   return {
     profiles: JSON.parse(JSON.stringify(state.profiles)),
     activeProfileId: state.activeProfileId,
-    activeProfile: state.activeProfile ? JSON.parse(JSON.stringify(state.activeProfile)) : null,
+    activeProfile: state.activeProfile
+      ? JSON.parse(JSON.stringify(state.activeProfile))
+      : null,
     rallyConfig: JSON.parse(JSON.stringify(state.rallyConfig)),
   };
 }

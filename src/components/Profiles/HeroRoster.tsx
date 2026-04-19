@@ -365,7 +365,10 @@ export function HeroRoster({
   const [exiting, setExiting] = useState(false);
   const exitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const filteredHeroesRef = useHeroRosterNavigation(selectedHero, setSelectedHero);
+  const filteredHeroesRef = useHeroRosterNavigation(
+    selectedHero,
+    setSelectedHero,
+  );
 
   useEffect(() => {
     onFilteredHeroesChange?.(computeFilteredHeroes(filterClass, filterGen));

@@ -107,13 +107,11 @@ export function migrateProfile(raw: Record<string, unknown>): PlayerProfile {
       cav: "None",
       arc: "None",
     },
-    troop_tier:
-      (raw.troop_tier as PlayerProfile["troop_tier"]) ?? "T10",
+    troop_tier: (raw.troop_tier as PlayerProfile["troop_tier"]) ?? "T10",
     tg_level: (raw.tg_level as PlayerProfile["tg_level"]) ?? 0,
     rally_capacity:
       typeof raw.rally_capacity === "number" ? raw.rally_capacity : 2_000_000,
-    ownedHeroes:
-      (raw.ownedHeroes as PlayerProfile["ownedHeroes"]) ?? {},
+    ownedHeroes: (raw.ownedHeroes as PlayerProfile["ownedHeroes"]) ?? {},
     govGear: (raw.govGear as PlayerProfile["govGear"]) ?? defaultGovGear(),
     govCharmLevel:
       typeof raw.govCharmLevel === "number" ? raw.govCharmLevel : 0,
@@ -235,7 +233,10 @@ export function importProfileFromJson(json: string): PlayerProfile | null {
     return {
       ...profile,
       // Utiliser "Imported Profile" si aucun nom n'était fourni dans le JSON source
-      name: typeof raw.name === "string" && raw.name ? raw.name : "Imported Profile",
+      name:
+        typeof raw.name === "string" && raw.name
+          ? raw.name
+          : "Imported Profile",
       id: generateId(), // toujours un nouvel ID à l'import
       createdAt: new Date().toISOString(),
     };

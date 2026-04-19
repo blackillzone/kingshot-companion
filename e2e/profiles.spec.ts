@@ -7,21 +7,27 @@ test.describe("Profile Management E2E", () => {
     await page.waitForSelector("body", { timeout: 5000 });
   });
 
-  test("should load profiles interface on startup without errors", async ({ page }) => {
+  test("should load profiles interface on startup without errors", async ({
+    page,
+  }) => {
     // App should render main content
     const main = page.locator("[role=main], main, .container").first();
-    await expect(main).toBeVisible().catch(() => {
-      // Fallback: check for any visible content
-      return expect(page.locator("body")).toBeVisible();
-    });
+    await expect(main)
+      .toBeVisible()
+      .catch(() => {
+        // Fallback: check for any visible content
+        return expect(page.locator("body")).toBeVisible();
+      });
   });
 
-  test("should display profile-related UI elements (buttons, lists, etc.)", async ({ page }) => {
+  test("should display profile-related UI elements (buttons, lists, etc.)", async ({
+    page,
+  }) => {
     // Look for interactive elements
     const buttons = page.locator("button");
     const count = await buttons.count();
     expect(count).toBeGreaterThan(0);
-    
+
     // At least one button should be visible
     if (count > 0) {
       await expect(buttons.first()).toBeVisible();
@@ -34,7 +40,7 @@ test.describe("Profile Management E2E", () => {
     // Wait for app to hydrate after reload
     await page.waitForSelector("body", { timeout: 5000 });
     const reloadUrl = page.url();
-    
+
     // URL should remain on same route
     expect(reloadUrl).toBe(initialUrl);
   });
@@ -43,12 +49,14 @@ test.describe("Profile Management E2E", () => {
     // Try to find profile list elements
     const listItems = page.locator("li, [role=listitem], [role=option]");
     const count = await listItems.count();
-    
+
     // May be empty initially, but should not crash
     expect(count).toBeGreaterThanOrEqual(0);
   });
 
-  test("should handle storage properly without console errors", async ({ page }) => {
+  test("should handle storage properly without console errors", async ({
+    page,
+  }) => {
     // Collect console messages
     const errors: string[] = [];
     page.on("console", (msg) => {
@@ -56,14 +64,15 @@ test.describe("Profile Management E2E", () => {
         errors.push(msg.text());
       }
     });
-    
+
     // Wait for app to settle
     await page.waitForSelector("body", { timeout: 5000 });
-    
+
     // Should not have storage-related errors
-    const storageErrors = errors.filter(e => 
-      e.toLowerCase().includes("storage") || 
-      e.toLowerCase().includes("localstorage")
+    const storageErrors = errors.filter(
+      (e) =>
+        e.toLowerCase().includes("storage") ||
+        e.toLowerCase().includes("localstorage"),
     );
     expect(storageErrors.length).toBe(0);
   });

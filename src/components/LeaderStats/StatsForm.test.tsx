@@ -28,18 +28,18 @@ describe("StatsForm", () => {
   it("should update hero stats when input values change", async () => {
     const user = userEvent.setup();
     const { container } = render(<StatsForm />);
-    
+
     // Get initial profile
     const initialProfile = useRallyStore.getState().activeProfile;
     expect(initialProfile?.stats.inf_atk).toBe(0);
-    
+
     // Find and interact with an input (assuming at least one number input exists)
     const numberInputs = container.querySelectorAll("input[type='number']");
     if (numberInputs.length > 0) {
       const firstInput = numberInputs[0] as HTMLInputElement;
       await user.clear(firstInput);
       await user.type(firstInput, "100");
-      
+
       // Wait for state update
       await waitFor(() => {
         const updatedProfile = useRallyStore.getState().activeProfile;
