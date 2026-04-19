@@ -368,7 +368,7 @@ describe("computeParticipantCurve", () => {
     );
 
     // Damage should generally increase as we can fill more of the capacity
-    expect(curve[14]!.damageScore).toBeGreaterThan(curve[0]!.damageScore);
+    expect(curve[14]?.damageScore).toBeGreaterThan(curve[0]?.damageScore);
   });
 
   it("fillRate should be <= 1", () => {
@@ -398,8 +398,8 @@ describe("computeParticipantCurve", () => {
     );
 
     for (let i = 0; i < curve.length - 1; i++) {
-      expect(curve[i]!.troopsPerParticipant).toBeGreaterThan(
-        curve[i + 1]!.troopsPerParticipant,
+      expect(curve[i]?.troopsPerParticipant).toBeGreaterThan(
+        curve[i + 1]?.troopsPerParticipant,
       );
     }
   });

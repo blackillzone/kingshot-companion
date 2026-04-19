@@ -30,7 +30,7 @@ function CustomTooltip({
   payload?: { payload: DataPoint }[];
 }) {
   if (!active || !payload?.length) return null;
-  const d = payload[0]!.payload;
+  const d = payload[0]?.payload;
   return (
     <div className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-xs shadow-xl">
       <p className="text-gray-300 font-semibold mb-1">

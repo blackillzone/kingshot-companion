@@ -100,8 +100,8 @@ describe("loadProfiles / saveProfiles", () => {
 
     const loaded = loadProfiles();
     expect(loaded).toHaveLength(2);
-    expect(loaded[0]!.name).toBe("Profile 1");
-    expect(loaded[1]!.name).toBe("Profile 2");
+    expect(loaded[0]?.name).toBe("Profile 1");
+    expect(loaded[1]?.name).toBe("Profile 2");
   });
 
   it("should migrate missing fields in loaded profiles", () => {
@@ -121,12 +121,12 @@ describe("loadProfiles / saveProfiles", () => {
     localStorage.setItem("ks_profiles", JSON.stringify([oldProfile]));
 
     const loaded = loadProfiles();
-    expect(loaded[0]!.widget_levels).toBeDefined();
-    expect(loaded[0]!.ownedHeroes).toBeDefined();
-    expect(loaded[0]!.govGear).toBeDefined();
-    expect(loaded[0]!.govCharmLevel).toBeGreaterThanOrEqual(0);
-    expect(loaded[0]!.staticBonuses).toBeDefined();
-    expect(loaded[0]!.troops).toBeDefined();
+    expect(loaded[0]?.widget_levels).toBeDefined();
+    expect(loaded[0]?.ownedHeroes).toBeDefined();
+    expect(loaded[0]?.govGear).toBeDefined();
+    expect(loaded[0]?.govCharmLevel).toBeGreaterThanOrEqual(0);
+    expect(loaded[0]?.staticBonuses).toBeDefined();
+    expect(loaded[0]?.troops).toBeDefined();
   });
 
   it("should handle invalid JSON gracefully", () => {
@@ -144,7 +144,7 @@ describe("upsertProfile", () => {
     const result = upsertProfile([], profile);
 
     expect(result).toHaveLength(1);
-    expect(result[0]!.id).toBe(profile.id);
+    expect(result[0]?.id).toBe(profile.id);
   });
 
   it("should update an existing profile by id", () => {
@@ -155,7 +155,7 @@ describe("upsertProfile", () => {
     profiles = upsertProfile(profiles, updated);
 
     expect(profiles).toHaveLength(1);
-    expect(profiles[0]!.name).toBe("Updated Name");
+    expect(profiles[0]?.name).toBe("Updated Name");
   });
 
   it("should remove oldest profile if exceeding MAX_PROFILES (10)", () => {
@@ -167,8 +167,8 @@ describe("upsertProfile", () => {
     }
 
     expect(profiles).toHaveLength(10);
-    expect(profiles[0]!.name).toBe("Profile 3"); // First 2 removed (oldest first)
-    expect(profiles[9]!.name).toBe("Profile 12");
+    expect(profiles[0]?.name).toBe("Profile 3"); // First 2 removed (oldest first)
+    expect(profiles[9]?.name).toBe("Profile 12");
   });
 
   it("should preserve order when updating existing profile", () => {
@@ -183,7 +183,7 @@ describe("upsertProfile", () => {
     const updated = { ...p2, name: "Profile 2 Updated" };
     profiles = upsertProfile(profiles, updated);
 
-    expect(profiles[1]!.name).toBe("Profile 2 Updated");
+    expect(profiles[1]?.name).toBe("Profile 2 Updated");
     expect(profiles).toHaveLength(3);
   });
 });
@@ -267,9 +267,9 @@ describe("importProfileFromJson / exportProfile", () => {
     const imported = importProfileFromJson(json);
 
     expect(imported).not.toBeNull();
-    expect(imported!.name).toBe("Original");
-    expect(imported!.id).not.toBe(original.id); // New ID
-    expect(imported!.stats).toEqual(original.stats);
+    expect(imported?.name).toBe("Original");
+    expect(imported?.id).not.toBe(original.id); // New ID
+    expect(imported?.stats).toEqual(original.stats);
   });
 
   it("should generate new ID on import", () => {
@@ -279,7 +279,7 @@ describe("importProfileFromJson / exportProfile", () => {
     const json = JSON.stringify(original);
     const imported = importProfileFromJson(json);
 
-    expect(imported!.id).not.toBe(originalId);
+    expect(imported?.id).not.toBe(originalId);
   });
 
   it("should generate new timestamp on import", () => {
@@ -292,7 +292,7 @@ describe("importProfileFromJson / exportProfile", () => {
     const after = new Date();
 
     // Timestamp should be between before and after
-    const importedTime = new Date(imported!.createdAt);
+    const importedTime = new Date(imported?.createdAt);
     expect(importedTime.getTime()).toBeGreaterThanOrEqual(before.getTime());
     expect(importedTime.getTime()).toBeLessThanOrEqual(after.getTime());
   });
@@ -302,7 +302,7 @@ describe("importProfileFromJson / exportProfile", () => {
     const json = JSON.stringify(original);
 
     const imported = importProfileFromJson(json);
-    expect(imported!.name).toBe("Custom Name");
+    expect(imported?.name).toBe("Custom Name");
 
     // Test with no name
     const noName = {
@@ -310,7 +310,7 @@ describe("importProfileFromJson / exportProfile", () => {
       heroes: { inf: "None", cav: "None", arc: "None" },
     };
     const noNameImported = importProfileFromJson(JSON.stringify(noName));
-    expect(noNameImported!.name).toBe("Imported Profile");
+    expect(noNameImported?.name).toBe("Imported Profile");
   });
 
   it("exportProfile should not error (side effect test)", () => {
@@ -389,8 +389,8 @@ describe("validateProfile", () => {
     };
     const result = validateProfile(raw);
     expect(result).not.toBeNull();
-    expect(result!._version).toBe(CURRENT_PROFILE_VERSION);
-    expect(result!.name).toBe("Test Profile");
+    expect(result?._version).toBe(CURRENT_PROFILE_VERSION);
+    expect(result?.name).toBe("Test Profile");
   });
 
   it("should fill missing fields with defaults (migration v1 → v2)", () => {
@@ -403,11 +403,11 @@ describe("validateProfile", () => {
     };
     const result = validateProfile(v1Profile);
     expect(result).not.toBeNull();
-    expect(result!.widget_levels).toBeDefined();
-    expect(result!.govGear).toBeDefined();
-    expect(result!.staticBonuses).toBeDefined();
-    expect(result!.troops).toBeDefined();
-    expect(result!._version).toBe(CURRENT_PROFILE_VERSION);
+    expect(result?.widget_levels).toBeDefined();
+    expect(result?.govGear).toBeDefined();
+    expect(result?.staticBonuses).toBeDefined();
+    expect(result?.troops).toBeDefined();
+    expect(result?._version).toBe(CURRENT_PROFILE_VERSION);
   });
 });
 
@@ -462,6 +462,6 @@ describe("importProfileFromJson — corrupted input", () => {
     const json = JSON.stringify(original);
     const imported = importProfileFromJson(json);
     expect(imported).not.toBeNull();
-    expect(imported!.id).not.toBe(original.id);
+    expect(imported?.id).not.toBe(original.id);
   });
 });

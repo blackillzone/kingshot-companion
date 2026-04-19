@@ -45,7 +45,7 @@ describe("HERO_DB", () => {
       (h) => h.bonus_type === "atk_all",
     );
     expect(atkAllHeroes).toHaveLength(1);
-    expect(atkAllHeroes[0]!.name).toBe("Amane");
+    expect(atkAllHeroes[0]?.name).toBe("Amane");
   });
 
   it("let_all joiners should be Chenko and Yeonwoo", () => {

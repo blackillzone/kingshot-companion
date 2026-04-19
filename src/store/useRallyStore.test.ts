@@ -58,7 +58,7 @@ describe("useRallyStore - selectProfile", () => {
     store.newProfile("Profile 2");
 
     const state1 = useRallyStore.getState();
-    const profile1Id = state1.profiles[0]!.id;
+    const profile1Id = state1.profiles[0]?.id;
 
     store.selectProfile(profile1Id);
 
@@ -165,7 +165,7 @@ describe("useRallyStore - removeProfile", () => {
     store.newProfile("Profile to Remove");
 
     const state = useRallyStore.getState();
-    const profileIdToRemove = state.profiles[0]!.id;
+    const profileIdToRemove = state.profiles[0]?.id;
     const count = state.profiles.length;
 
     store.removeProfile(profileIdToRemove);
