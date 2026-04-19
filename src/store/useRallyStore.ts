@@ -113,6 +113,7 @@ export const useRallyStore = create<RallyStore>()(
     }
 
     const activeProfile = initialProfiles.find((p) => p.id === activeId) ?? initialProfiles.at(0);
+    if (!activeProfile) throw new Error("Unable to find active profile");
 
     return {
       profiles: initialProfiles,

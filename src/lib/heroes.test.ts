@@ -8,7 +8,7 @@ import {
   getJoinerAtkAllBonus,
   getJoinerLetAllBonus,
 } from "./heroes";
-import type { JoinerSlot } from "../types";
+import type { JoinerSlot, HeroName, SkillLevel } from "../types";
 
 // ─── HERO_DB Integrity tests ───────────────────────────────────────────────
 
@@ -300,7 +300,7 @@ describe("getJoinerAtkAllBonus - edge cases", () => {
 
   it("should handle skillLevel out of bounds with nullish coalescing", () => {
     const joiners: JoinerSlot[] = [
-      { hero: "Amane", skillLevel: 99 }, // Out of bounds
+      { hero: "Amane", skillLevel: 99 as unknown as SkillLevel }, // Out of bounds
     ];
     const bonus = getJoinerAtkAllBonus(joiners);
     expect(bonus).toBe(0); // No bonus for invalid level
@@ -326,7 +326,7 @@ describe("getJoinerAtkAllBonus - edge cases", () => {
 
   it("should handle out-of-bounds skillLevel for let_all hero (branch: ?? 0)", () => {
     const joiners: JoinerSlot[] = [
-      { hero: "Chenko", skillLevel: 99 }, // Out of bounds - nullish coalescing should return 0
+      { hero: "Chenko", skillLevel: 99 as unknown as SkillLevel }, // Out of bounds - nullish coalescing should return 0
     ];
     const bonus = getJoinerLetAllBonus(joiners);
     expect(bonus).toBe(0); // No bonus for invalid level
@@ -334,7 +334,7 @@ describe("getJoinerAtkAllBonus - edge cases", () => {
 
   it("should handle out-of-bounds skillLevel for atk_all hero (branch: ?? 0)", () => {
     const joiners: JoinerSlot[] = [
-      { hero: "Amane", skillLevel: 99 }, // Out of bounds - nullish coalescing should return 0
+      { hero: "Amane", skillLevel: 99 as unknown as SkillLevel }, // Out of bounds - nullish coalescing should return 0
     ];
     const bonus = getJoinerAtkAllBonus(joiners);
     expect(bonus).toBe(0); // No bonus for invalid level

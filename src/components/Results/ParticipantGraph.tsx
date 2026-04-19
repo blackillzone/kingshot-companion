@@ -31,6 +31,7 @@ function CustomTooltip({
 }) {
   if (!active || !payload?.length) return null;
   const d = payload[0]?.payload;
+  if (!d) return null;
   return (
     <div className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-xs shadow-xl">
       <p className="text-gray-300 font-semibold mb-1">

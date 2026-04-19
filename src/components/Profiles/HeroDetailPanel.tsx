@@ -317,7 +317,7 @@ export function HeroDetailPanel({
                     : 0;
             return (
               <StarIcon
-                key={`${hero.id}-star-${s}`}
+                key={`${hero.name}-star-${s}`}
                 index={s}
                 filledCount={filledCount}
                 previewCount={previewCount}

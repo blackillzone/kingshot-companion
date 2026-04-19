@@ -39,6 +39,12 @@ test.describe("Bear Trap Calculator - Main Workflow E2E", () => {
   test("should display rally configuration interface with controls", async ({
     page,
   }) => {
+    // Navigate to Bear Trap view first (initial view is user-data)
+    const bearTrapBtn = page.getByRole("button", { name: /bear trap/i });
+    if (await bearTrapBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await bearTrapBtn.click();
+    }
+
     // Rally Config should have capacity and participants controls
     const numberInputs = page.locator("input[type=number]");
     const count = await numberInputs.count();

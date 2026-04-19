@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { JoinerRecommender } from "./JoinerRecommender";
 import { useRallyStore } from "../../store/useRallyStore";
 import { computeFormation } from "../../lib/formulas";
+import { createProfile } from "../../lib/storage";
 import { resetStore } from "../../test/storeFixture";
 
 describe("JoinerRecommender", () => {
@@ -11,10 +12,10 @@ describe("JoinerRecommender", () => {
     resetStore();
     localStorage.clear();
     
-    // Create a minimal profile for store state
+    // Create a valid PlayerProfile for store state
     const profile = {
+      ...createProfile("Test"),
       id: "test-profile",
-      name: "Test",
       stats: {
         inf_atk: 100,
         inf_let: 100,
@@ -22,17 +23,6 @@ describe("JoinerRecommender", () => {
         cav_let: 100,
         arc_atk: 100,
         arc_let: 100,
-      },
-      widgets: { inf: 0, cav: 0, arc: 0 },
-      heroes: {
-        inf: "None",
-        cav: "None",
-        arc: "None",
-      },
-      troops: {
-        inf: 0,
-        cav: 0,
-        arc: 0,
       },
     };
     

@@ -293,7 +293,7 @@ describe("importProfileFromJson / exportProfile", () => {
     const after = new Date();
 
     // Timestamp should be between before and after
-    const importedTime = new Date(imported?.createdAt);
+    const importedTime = new Date(imported?.createdAt as string);
     expect(importedTime.getTime()).toBeGreaterThanOrEqual(before.getTime());
     expect(importedTime.getTime()).toBeLessThanOrEqual(after.getTime());
   });

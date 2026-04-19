@@ -6,42 +6,6 @@
  */
 
 import { useRallyStore } from "../store/useRallyStore";
-import type { RallyStore } from "../types";
-
-/**
- * Default store state - used to reset store between tests
- */
-export function getDefaultStoreState(): RallyStore {
-  return {
-    profiles: useRallyStore.getState().profiles.length > 0 
-      ? useRallyStore.getState().profiles 
-      : [],
-    activeProfileId: useRallyStore.getState().activeProfileId,
-    activeProfile: useRallyStore.getState().activeProfile,
-    rallyConfig: useRallyStore.getState().rallyConfig,
-    result: useRallyStore.getState().result,
-    activeView: "rally" as const,
-    activeTab: "overview" as const,
-    selectedJoiner: null,
-    
-    // Actions
-    newProfile: useRallyStore.getState().newProfile,
-    selectProfile: useRallyStore.getState().selectProfile,
-    updateProfile: useRallyStore.getState().updateProfile,
-    duplicateProfile: useRallyStore.getState().duplicateProfile,
-    removeProfile: useRallyStore.getState().removeProfile,
-    setActiveView: useRallyStore.getState().setActiveView,
-    setActiveTab: useRallyStore.getState().setActiveTab,
-    importProfile: useRallyStore.getState().importProfile,
-    exportProfile: useRallyStore.getState().exportProfile,
-    setStats: useRallyStore.getState().setStats,
-    setWidgets: useRallyStore.getState().setWidgets,
-    setHeroes: useRallyStore.getState().setHeroes,
-    setTroops: useRallyStore.getState().setTroops,
-    setJoiner: useRallyStore.getState().setJoiner,
-    setSelectedJoiner: useRallyStore.getState().setSelectedJoiner,
-  };
-}
 
 /**
  * Reset store to default state

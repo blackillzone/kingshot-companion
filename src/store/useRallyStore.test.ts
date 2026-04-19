@@ -58,7 +58,7 @@ describe("useRallyStore - selectProfile", () => {
     store.newProfile("Profile 2");
 
     const state1 = useRallyStore.getState();
-    const profile1Id = state1.profiles[0]?.id;
+    const profile1Id = state1.profiles[0]?.id as string;
 
     store.selectProfile(profile1Id);
 
@@ -86,11 +86,11 @@ describe("useRallyStore - selectProfile", () => {
     const profile1 = state.profiles.at(0);
     expect(profile1).toBeDefined();
 
-    store.selectProfile(profile1.id);
+    store.selectProfile(profile1?.id as string);
 
     const updated = useRallyStore.getState();
-    expect(updated.activeProfileId).toBe(profile1.id);
-    expect(updated.activeProfile?.id).toBe(profile1.id);
+    expect(updated.activeProfileId).toBe(profile1?.id as string);
+    expect(updated.activeProfile?.id).toBe(profile1?.id as string);
   });
 });
 
@@ -165,7 +165,7 @@ describe("useRallyStore - removeProfile", () => {
     store.newProfile("Profile to Remove");
 
     const state = useRallyStore.getState();
-    const profileIdToRemove = state.profiles[0]?.id;
+    const profileIdToRemove = state.profiles[0]?.id as string;
     const count = state.profiles.length;
 
     store.removeProfile(profileIdToRemove);
