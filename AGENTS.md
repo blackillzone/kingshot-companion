@@ -11,6 +11,7 @@ Before working on this codebase, load these files to understand the project:
 | `doc/architecture.md` | Always — component tree, data flow, store structure, types |
 | `doc/kingshot-game.md` | When touching heroes, formulas, or game data |
 | `doc/tech-stack.md` | When touching build config, styling, or charts |
+| `doc/code-quality.md` | When adding features — testing strategy, Biome linting, CI/CD |
 | `doc/deployment.md` | When touching CI/CD, GitHub Actions, or vite.config.ts |
 
 ---
@@ -52,6 +53,17 @@ Before working on this codebase, load these files to understand the project:
 3. Add to the appropriate lead list (`LEAD_INF/CAV/ARC_HEROES`) or joiner list
 4. If it's a joiner with real bonuses, add to `CANDIDATES` in `JoinerRecommender.tsx`
 
+### Testing conventions
+- **Test files:** Colocated with source (`.test.ts`, `.test.tsx` suffix) except E2E tests in `e2e/`
+- **Test runner:** Vitest for unit/component tests, Playwright for E2E
+- **Coverage targets:** Must pass before merging
+  - `formulas.ts`: 88% (pure math functions)
+  - `heroes.ts`: 100% (data integrity critical)
+  - `storage.ts`: 96% (persistence critical)
+  - Global: 20% minimum
+- **Before committing:** Run `npm run test` locally — CI will block deploy if tests fail
+- **E2E tests:** Must have dev server running (`npm run dev` in another terminal)
+
 ---
 
 ## Build & dev commands
@@ -59,10 +71,18 @@ Before working on this codebase, load these files to understand the project:
 ```bash
 cd formation-calculator
 
-npm run dev        # Dev server → http://localhost:5173
-npm run build      # TypeScript check + Vite build → dist/
-npm run lint       # ESLint
-npm run preview    # Preview the production build locally
+npm run dev           # Dev server → http://localhost:5173
+npm run build         # TypeScript check + Vite build → dist/
+npm run lint          # Check code quality with Biome
+npm run lint:fix      # Auto-fix linting issues
+npm run preview       # Preview the production build locally
+
+# Testing
+npm test              # Run unit + component tests (Vitest)
+npm run test:watch    # Watch mode for TDD
+npm run test:coverage # View coverage report (targets: formulas 88%, heroes 100%, storage 96%)
+npm run test:e2e      # Run E2E tests (requires dev server)
+npm run test:all      # Run all checks: unit tests + E2E
 ```
 
 ---
