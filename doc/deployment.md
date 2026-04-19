@@ -4,10 +4,10 @@
 
 | Info | Valeur |
 |---|---|
-| Repository | https://github.com/blackillzone/hot-bear-trap-calculator |
+| Repository | https://github.com/blackillzone/kingshot-companion |
 | Branche principale | `main` |
 | Branche de déploiement | `gh-pages` (générée automatiquement) |
-| URL de production | https://blackillzone.github.io/hot-bear-trap-calculator/ |
+| URL de production | https://blackillzone.github.io/kingshot-companion/ |
 
 ---
 
@@ -83,13 +83,13 @@ Dans **Settings → Pages** du repository :
 
 ## Configuration Vite pour GitHub Pages
 
-L'application étant servie sous un sous-chemin (`/hot-bear-trap-calculator/`), Vite doit générer les assets avec la bonne base URL.
+L'application étant servie sous un sous-chemin (`/kingshot-companion/`), Vite doit générer les assets avec la bonne base URL.
 
 Dans `vite.config.ts` :
 ```typescript
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: '/hot-bear-trap-calculator/',
+  base: '/kingshot-companion/',
 })
 ```
 

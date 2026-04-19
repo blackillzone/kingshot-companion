@@ -2,7 +2,7 @@
 
 A free, static web app to calculate the optimal troop formation for the **Bear Trap rally event** in Kingshot.
 
-🔗 **Live app:** https://blackillzone.github.io/hot-bear-trap-calculator/
+🔗 **Live app:** https://blackillzone.github.io/kingshot-companion/
 
 Based on battle mechanics research from [Frakinator](https://frakinator.streamlit.app/) and [Kingshot Simulator](https://kingshotsimulator.com/).
 

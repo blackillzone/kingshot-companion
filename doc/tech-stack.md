@@ -41,7 +41,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: '/hot-bear-trap-calculator/',  // requis pour GitHub Pages
+  base: '/kingshot-companion/',  // requis pour GitHub Pages
 })
 ```
 

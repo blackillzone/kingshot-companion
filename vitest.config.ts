@@ -4,7 +4,7 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: "/hot-bear-trap-calculator/",
+  base: "/kingshot-companion/",
   test: {
     environment: "jsdom",
     globals: true,

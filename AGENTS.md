@@ -19,8 +19,8 @@ Before working on this codebase, load these files to understand the project:
 ## Project overview
 
 - **App:** HOT — Kingshot Tools (Bear Trap Rally calculator)
-- **Live URL:** https://blackillzone.github.io/hot-bear-trap-calculator/
-- **Repo:** https://github.com/blackillzone/hot-bear-trap-calculator
+- **Live URL:** https://blackillzone.github.io/kingshot-companion/
+- **Repo:** https://github.com/blackillzone/kingshot-companion
 - **Type:** Static SPA — React 19 + Vite 8 + TypeScript + Tailwind CSS v4
 - **Root:** `formation-calculator/` (the workspace subfolder contains the app)
 
@@ -91,7 +91,7 @@ npm run test:all      # Run all checks: unit tests + E2E
 
 Push to `main` → GitHub Actions builds and deploys to `gh-pages` branch → GitHub Pages serves it.
 
-The `base` in `vite.config.ts` must stay as `/hot-bear-trap-calculator/` for GitHub Pages assets to resolve correctly.
+The `base` in `vite.config.ts` must stay as `/kingshot-companion/` for GitHub Pages assets to resolve correctly.
 
 ---
 
