@@ -43,7 +43,7 @@ export function Guide() {
       <SectionCard title="How the formula works" icon={<BookOpen size={15} />}>
         <div className="space-y-3 text-sm text-gray-400">
           <p>
-            Based on <a href="https://frakinator.streamlit.app" className="text-orange-400 hover:underline" target="_blank">Frakinator</a>'s
+            Based on <a href="https://frakinator.streamlit.app" className="text-orange-400 hover:underline" target="_blank" rel="noopener">Frakinator</a>'s
             battle mechanics research. The total damage dealt to the bear is:
           </p>
           <div className="bg-gray-950 rounded-lg p-3 font-mono text-xs space-y-1">

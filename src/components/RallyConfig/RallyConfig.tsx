@@ -44,7 +44,7 @@ export function RallyConfig() {
                 min={1}
                 max={15}
                 value={config.participants}
-                onChange={e => setRallyConfig({ participants: parseInt(e.target.value) })}
+                onChange={e => setRallyConfig({ participants: parseInt(e.target.value, 10) })}
                 className="w-full accent-orange-500"
               />
               <div className="flex justify-between text-xs text-gray-500">

@@ -49,9 +49,12 @@ cd formation-calculator
 npm install
 npm run dev        # → http://localhost:5173
 npm run build      # → dist/ (fully static)
+npm run lint       # Check code quality with Biome
+npm run lint:fix   # Auto-fix linting issues
 ```
 
 → See [doc/deployment.md](doc/deployment.md) for GitHub Actions CI/CD details.
+→ See [doc/code-quality.md](doc/code-quality.md) for linting configuration and Biome migration details.
 
 ---
 

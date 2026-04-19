@@ -43,7 +43,7 @@ export function NumberInput({ value, onChange, min = 0, max, step = 1, suffix, c
 
   function commit(raw: string) {
     const v = parseFloat(raw);
-    if (!isNaN(v)) {
+    if (!Number.isNaN(v)) {
       const clamped = Math.min(max ?? Infinity, Math.max(min, v));
       onChange(clamped);
       setDisplay(String(clamped));

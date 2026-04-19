@@ -46,7 +46,7 @@ export function Header() {
 
           {/* Profile switcher */}
           <div className="relative group">
-            <button className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 rounded-lg px-3 py-1.5 text-sm text-gray-200 transition-colors">
+            <button type="button" className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 rounded-lg px-3 py-1.5 text-sm text-gray-200 transition-colors">
               <User size={14} className="text-orange-400" />
               <span className="max-w-32 truncate">{activeProfile?.name ?? 'Select Profile'}</span>
               <ChevronDown size={14} className="text-gray-400" />
@@ -55,6 +55,7 @@ export function Header() {
             <div className="absolute right-0 mt-1 w-52 bg-gray-800 border border-gray-700 rounded-lg shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
               {profiles.map(p => (
                 <button
+                  type="button"
                   key={p.id}
                   onClick={() => selectProfile(p.id)}
                   className={clsx(
@@ -67,6 +68,7 @@ export function Header() {
               ))}
               <div className="border-t border-gray-700">
                 <button
+                  type="button"
                   onClick={() => setActiveView('profiles')}
                   className="w-full text-left px-4 py-2.5 text-sm text-gray-400 hover:bg-gray-700 rounded-b-lg transition-colors"
                 >
@@ -82,6 +84,7 @@ export function Header() {
           <nav className="flex gap-1 -mb-px">
             {BT_TABS.map(({ id, label, icon: Icon }) => (
               <button
+                type="button"
                 key={id}
                 onClick={() => setActiveTab(id)}
                 className={clsx(
@@ -103,6 +106,7 @@ export function Header() {
           <nav className="flex gap-1 -mb-px">
             {UD_TABS.map(({ id, label, icon: Icon }) => (
               <button
+                type="button"
                 key={id}
                 onClick={() => setUserDataTab(id)}
                 className={clsx(
