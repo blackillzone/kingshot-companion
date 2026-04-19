@@ -86,7 +86,7 @@ export function JoinerRecommender() {
   }
 
   function applyCombo(joiners: JoinerSlot[]) {
-    ([0, 1, 2, 3] as const).forEach(i => setJoiner(i, joiners[i]));
+    ([0, 1, 2, 3] as const).forEach(i => { setJoiner(i, joiners[i]); });
   }
 
   return (
@@ -111,7 +111,10 @@ export function JoinerRecommender() {
       <div className="space-y-2">
         {recommendations.map((rec, idx) => {
           const label = rec.combo
-            .reduce<Record<string, number>>((acc, h) => ({ ...acc, [h]: (acc[h] ?? 0) + 1 }), {});
+            .reduce<Record<string, number>>((acc, h) => {
+              const current = acc[h] ?? 0;
+              return { ...acc, [h]: current + 1 };
+            }, {});
           const labelStr = Object.entries(label)
             .map(([h, n]) => (n > 1 ? `${n}× ${h}` : h))
             .join(' + ');
@@ -124,8 +127,9 @@ export function JoinerRecommender() {
           const isTop = idx === 0 && !isSelected;
 
           return (
-            <div
-              key={idx}
+            <button
+              type="button"
+              key={`combo-${idx}-${rec.combo.slice().sort().join('-')}`}
               onClick={() => applyCombo(rec.joiners)}
               className={`cursor-pointer flex items-center gap-3 rounded-lg px-3 py-2.5 border text-xs transition-colors ${
                 isSelected
@@ -147,7 +151,7 @@ export function JoinerRecommender() {
               <span className={`shrink-0 font-semibold ${isSelected ? 'text-orange-400' : idx === 0 ? 'text-orange-400' : 'text-gray-400'}`}>
                 {rec.pct.toFixed(1)}%
               </span>
-            </div>
+            </button>
           );
         })}
       </div>

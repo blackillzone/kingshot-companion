@@ -60,6 +60,7 @@ export function ProfileManager() {
               )}
             >
               <button
+                type="button"
                 onClick={() => selectProfile(p.id)}
                 className="flex-1 text-left"
               >
@@ -76,6 +77,7 @@ export function ProfileManager() {
               <div className="flex items-center gap-1 shrink-0">
                 {/* Export */}
                 <button
+                  type="button"
                   onClick={() => exportProfile(p)}
                   title="Export profile"
                   className="p-2 text-gray-500 hover:text-orange-400 transition-colors rounded-lg hover:bg-gray-700"
@@ -87,12 +89,14 @@ export function ProfileManager() {
                 {confirmDelete === p.id ? (
                   <div className="flex items-center gap-1">
                     <button
+                      type="button"
                       onClick={() => { removeProfile(p.id); setConfirmDelete(null); }}
                       className="text-xs px-2 py-1 bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 transition-colors"
                     >
                       Confirm
                     </button>
                     <button
+                      type="button"
                       onClick={() => setConfirmDelete(null)}
                       className="text-xs px-2 py-1 bg-gray-700 text-gray-400 rounded hover:bg-gray-600 transition-colors"
                     >
@@ -101,6 +105,7 @@ export function ProfileManager() {
                   </div>
                 ) : (
                   <button
+                    type="button"
                     onClick={() => setConfirmDelete(p.id)}
                     title="Delete profile"
                     className="p-2 text-gray-500 hover:text-red-400 transition-colors rounded-lg hover:bg-gray-700"
@@ -119,7 +124,6 @@ export function ProfileManager() {
           <div className="flex gap-2 mt-3">
             <input
               type="text"
-              autoFocus
               value={newName}
               onChange={e => setNewName(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleCreate()}
@@ -127,12 +131,14 @@ export function ProfileManager() {
               className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-orange-500 transition-colors"
             />
             <button
+              type="button"
               onClick={handleCreate}
               className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded-lg transition-colors"
             >
               Create
             </button>
             <button
+              type="button"
               onClick={() => { setShowNew(false); setNewName(''); }}
               className="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm rounded-lg transition-colors"
             >
@@ -142,6 +148,7 @@ export function ProfileManager() {
         ) : (
           <div className="flex gap-2 mt-3">
             <button
+              type="button"
               onClick={() => setShowNew(true)}
               disabled={profiles.length >= 10}
               className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 text-sm rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
@@ -152,6 +159,7 @@ export function ProfileManager() {
 
             {/* Import */}
             <button
+              type="button"
               onClick={() => fileRef.current?.click()}
               className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 text-sm rounded-lg transition-colors"
             >

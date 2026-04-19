@@ -45,7 +45,7 @@ export function UserDataPage() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedHero]);
+  }, [selectedHero, renderedHero]);
 
   function handleSelectHero(hero: HeroName | null, dir?: 'left' | 'right') {
     if (dir) setPanelDx(dir === 'left' ? '-80px' : '80px');
@@ -91,6 +91,7 @@ export function UserDataPage() {
           <div className="flex items-stretch gap-0 rounded-xl overflow-hidden border border-gray-800">
             {/* Flèche gauche */}
             <button
+              type="button"
               onClick={() => { const i = navHeroes.indexOf(renderedHero); if (i > 0) handleSelectHero(navHeroes[i - 1], 'left'); }}
               disabled={panelState === 'exit' || navHeroes.indexOf(renderedHero) <= 0}
               className={clsx(
@@ -120,6 +121,7 @@ export function UserDataPage() {
 
             {/* Flèche droite */}
             <button
+              type="button"
               onClick={() => { const i = navHeroes.indexOf(renderedHero); if (i >= 0 && i < navHeroes.length - 1) handleSelectHero(navHeroes[i + 1], 'right'); }}
               disabled={panelState === 'exit' || navHeroes.indexOf(renderedHero) >= navHeroes.length - 1}
               className={clsx(

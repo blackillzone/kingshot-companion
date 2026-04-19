@@ -100,6 +100,7 @@ export function ParticipantGraph() {
             <div className="flex flex-wrap gap-1.5">
               {[5, 8, 10, 12, 15].map(n => (
                 <button
+                  type="button"
                   key={n}
                   onClick={() => setRallyConfig({ participants: n })}
                   className={`px-3 py-1 text-xs rounded-full border transition-colors ${
@@ -122,6 +123,7 @@ export function ParticipantGraph() {
             if (!d) return null;
             return (
               <button
+                type="button"
                 key={n}
                 onClick={() => setRallyConfig({ participants: n })}
                 className={`text-center rounded-lg p-2 border transition-colors cursor-pointer ${

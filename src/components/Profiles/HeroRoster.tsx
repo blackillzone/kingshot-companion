@@ -27,7 +27,8 @@ function SlideFilterBar<T extends string>({
     setIndicator({ left: btn.offsetLeft, width: btn.offsetWidth });
   }, [active]);
 
-  const activeFilter = filters.find(f => f.id === active)!;
+  const activeFilter = filters.find(f => f.id === active);
+  if (!activeFilter) return null;
 
   return (
     <div ref={containerRef} className="relative flex gap-1">
@@ -40,6 +41,7 @@ function SlideFilterBar<T extends string>({
       )}
       {filters.map(f => (
         <button
+          type="button"
           key={f.id}
           data-id={f.id}
           onClick={() => onChange(f.id)}
@@ -59,7 +61,8 @@ function SlideFilterBar<T extends string>({
 function Tooltip({ text, children }: { text: string; children: React.ReactNode }) {
   const [visible, setVisible] = useState(false);
   return (
-    <span
+    <div
+      aria-live="polite"
       className="relative inline-flex"
       onMouseEnter={() => setVisible(true)}
       onMouseLeave={() => setVisible(false)}
@@ -69,13 +72,13 @@ function Tooltip({ text, children }: { text: string; children: React.ReactNode }
       {children}
       {visible && (
         <span className="absolute bottom-full right-0 mb-1.5 z-50 pointer-events-none">
-          <span className="block whitespace-nowrap bg-gray-800 border border-gray-700 text-gray-300 text-xs font-medium rounded-lg px-2.5 py-1.5 shadow-lg">
+          <div className="block whitespace-nowrap bg-gray-800 border border-gray-700 text-gray-300 text-xs font-medium rounded-lg px-2.5 py-1.5 shadow-lg">
             {text}
-          </span>
+          </div>
           <span className="block w-2 h-2 bg-gray-800 border-r border-b border-gray-700 rotate-45 ml-auto mr-1 -mt-1" />
         </span>
       )}
-    </span>
+    </div>
   );
 }
 
@@ -163,7 +166,7 @@ function heroGenOrder(gen: string | number | null): number {
   if (gen === 'epic') return 1;
   if (gen === null) return 99;
   const n = Number(gen);
-  return isNaN(n) ? 99 : n + 1; // S1→2, S2→3, …, S5→6
+  return Number.isNaN(n) ? 99 : n + 1; // S1→2, S2→3, …, S5→6
 }
 
 // All heroes sorted: Rare → Epic → S1 → S2 → S3 → S4 → S5, then alpha
@@ -209,6 +212,7 @@ function HeroCard({
 
   return (
     <button
+      type="button"
       onClick={e => onClick(e)}
       title={name}
       className={clsx(
@@ -228,11 +232,16 @@ function HeroCard({
           </span>
         ) : <span />}
         {/* Point owned — toujours visible, clic indépendant */}
-        <span
-          role="checkbox"
-          aria-checked={isOwned}
+        <button
+          type="button"
           aria-label={isOwned ? 'Retirer' : 'Posséder'}
           onClick={e => { e.stopPropagation(); onToggleOwned(); }}
+          onKeyDown={e => {
+            if (e.key === ' ' || e.key === 'Enter') {
+              e.preventDefault();
+              onToggleOwned();
+            }
+          }}
           className={clsx(
             'w-3 h-3 rounded-full transition-all cursor-pointer',
             isOwned
@@ -305,7 +314,7 @@ function StarIcon({
   const hasAny = filledCount > 0 || previewCount > 0;
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block' }}>
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block' }} role="img" aria-label={`Tier rank ${filledCount} of 6`}>
       <defs>
         <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%"   stopColor="#fbbf24" />
@@ -323,13 +332,19 @@ function StarIcon({
         const isPreview = !isFilled && rank < previewCount;
         return (
           <path
-            key={i}
+            key={rank}
             d={branchPath(i)}
             fill={isFilled ? `url(#${gradId})` : isPreview ? `url(#${previewGradId})` : '#1f2937'}
             stroke={isFilled ? '#ea580c' : isPreview ? '#fb923c66' : '#374151'}
             strokeWidth={0.8}
             style={{ cursor: 'pointer', transition: 'fill 80ms' }}
             onClick={() => onBranchClick(rank + 1)}
+            onKeyDown={e => {
+              if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                onBranchClick(rank + 1);
+              }
+            }}
             onMouseEnter={() => onBranchHover(rank + 1)}
             onMouseLeave={() => onBranchHover(null)}
           />
@@ -354,7 +369,7 @@ function MiniInput({
   const [display, setDisplay] = useState(String(value));
   function commit(raw: string) {
     const v = parseInt(raw, 10);
-    if (!isNaN(v)) {
+    if (!Number.isNaN(v)) {
       const clamped = Math.max(0, Math.min(max, v));
       onChange(clamped);
       setDisplay(String(clamped));
@@ -450,6 +465,7 @@ export function HeroDetailPanel({
           <p className="text-xs text-gray-500 leading-snug mt-0.5 line-clamp-1">{hero.description}</p>
         </div>
         <button
+          type="button"
           onClick={onClose}
           className="shrink-0 p-1 rounded-lg text-gray-500 hover:text-white hover:bg-gray-800 transition-colors mt-0.5"
         >
@@ -551,7 +567,7 @@ export function HeroDetailPanel({
               : 0;
             return (
               <StarIcon
-                key={s}
+                key={`star-${filledCount}-${previewCount}-${s}`}
                 index={s}
                 filledCount={filledCount}
                 previewCount={previewCount}
@@ -851,8 +867,9 @@ export function HeroRoster({
         <div className="absolute top-3 right-2 z-30">
           <Tooltip text="Click a hero to select it and configure its details.">
             <span
+              role="img"
+              aria-label="Info about hero selection"
               className="text-gray-600 hover:text-gray-400 cursor-default transition-colors"
-              aria-label="Click a hero to select it and configure its details."
             >
               <Info size={12} />
             </span>
@@ -885,6 +902,7 @@ export function HeroRoster({
         {/* Floating select all button — absolute over the grid */}
         {filteredHeroes.length > 0 && (
           <button
+            type="button"
             onClick={toggleAllOwned}
             className={clsx(
               'absolute bottom-3 right-5 z-10 px-4 py-2 rounded-full text-[12px] font-bold uppercase tracking-wide transition-all duration-150 shadow-[0_4px_20px_rgba(0,0,0,0.8)] backdrop-blur-sm',

@@ -16,7 +16,7 @@ export function Sidebar() {
       {/* Branding */}
       <div className="px-4 py-5 border-b border-gray-800">
         <div className="flex items-center gap-2.5">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" className="w-8 h-8 shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" className="w-8 h-8 shrink-0" role="img" aria-label="Kings[HOT] logo">
             <defs>
               <linearGradient id="sbPepperGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor="#ff2222"/>
@@ -52,6 +52,7 @@ export function Sidebar() {
           {MENU_ITEMS.map(({ id, label, icon: Icon }) => (
             <li key={id}>
               <button
+                type="button"
                 onClick={() => setActiveView(id)}
                 className={clsx(
                   'w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors',

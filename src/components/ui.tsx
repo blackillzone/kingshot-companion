@@ -10,15 +10,18 @@ interface Props {
 }
 
 export function Field({ label, hint, children, className, row }: Props) {
+  const inputId = `field-${label.replace(/\s+/g, '-').toLowerCase()}`;
   return (
     <div className={clsx(row ? 'flex items-center gap-3' : 'flex flex-col gap-1', className)}>
-      <label className={clsx('text-xs font-medium text-gray-400 whitespace-nowrap', row && 'w-28 shrink-0')}>
+      <label htmlFor={inputId} className={clsx('text-xs font-medium text-gray-400 whitespace-nowrap', row && 'w-28 shrink-0')}>
         {label}
         {hint && (
           <span className="ml-1 text-gray-600 cursor-help" title={hint}>ⓘ</span>
         )}
       </label>
-      {children}
+      <div id={inputId} className="contents">
+        {children}
+      </div>
     </div>
   );
 }
