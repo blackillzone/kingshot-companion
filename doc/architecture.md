@@ -10,11 +10,12 @@ formation-calculator/
 ├── src/
 │   ├── assets/          # Images (hero.png)
 │   ├── components/      # Composants React (voir détail ci-dessous)
-│   ├── lib/             # Logique métier pure (formules, héros, storage)
+│   ├── hooks/           # Hooks React réutilisables
+│   ├── lib/             # Logique métier pure (formules, héros, storage, catalogue)
 │   ├── store/           # État global Zustand
 │   ├── types/           # Types TypeScript centralisés
 │   ├── index.css        # Styles globaux (Tailwind v4 import)
-│   └── main.tsx         # Point d'entrée React
+│   └── main.tsx         # Point d'entrée React (wrappé dans ErrorBoundary)
 ├── doc/                 # Cette documentation
 ├── .github/workflows/   # GitHub Actions CI/CD
 ├── index.html           # Shell HTML principal
@@ -29,8 +30,9 @@ formation-calculator/
 ```
 components/
 ├── App.tsx                        # Routeur par onglet (formation / participants / profiles / guide)
+├── ErrorBoundary.tsx              # React class ErrorBoundary — wrapping global de l'app
 ├── Guide.tsx                      # Onglet Guide — explications textuelles du calcul
-├── ui.tsx                         # Primitives réutilisables : SectionCard, Field, Select, Label
+├── ui.tsx                         # Primitives réutilisables : SectionCard, Field, Select, NumberInput, MiniInput
 ├── Layout/
 │   ├── Header.tsx                 # Barre de navigation + sélecteur de profil
 │   └── Footer.tsx                 # Liens de sources (Frakinator, Kingshot Simulator)
@@ -38,7 +40,12 @@ components/
 │   ├── StatsForm.tsx              # Grille 5×3 INF/CAV/ARC : ATK%, LET%, Widget, Lead Hero
 │   └── HeroSelect.tsx             # Dropdown Lead Hero avec badges de génération colorés
 ├── Profiles/
-│   └── ProfileManager.tsx         # Création / sélection / suppression de profils
+│   ├── ProfileManager.tsx         # Création / sélection / suppression de profils
+│   ├── GovDataEditor.tsx          # Éditeur de données gouverneur (héros, gov-gear, stats statiques, troupes)
+│   ├── HeroRoster.tsx             # Grille de héros avec filtres (type, génération, possédés)
+│   ├── HeroDetailPanel.tsx        # Panneau de détail héros (niveau, étoiles, gear, widget)
+│   ├── StaticStatsEditor.tsx      # Éditeur de bonus statiques (recherche, alliance, pets…)
+│   └── TroopEditor.tsx            # Éditeur d'inventaire de troupes (par niveau et type)
 ├── RallyConfig/
 │   └── RallyConfig.tsx            # Capacité du rally, participants, niveau du Bear Trap
 └── Results/
@@ -56,7 +63,17 @@ components/
 | `SectionCard` | Bloc avec header coloré et contenu, sans `overflow-hidden` sur l'outer div (requis pour les dropdowns) |
 | `Field` | Wrapper label + input |
 | `Select<T>` | `<select>` typé générique avec styles cohérents |
-| `Label` | Label de formulaire |
+| `NumberInput` | Input numérique (float, `px-3 py-2`, sync valeur externe via `useEffect`) |
+| `MiniInput` | Input numérique compact (int, `text-xs`, centré — utilisé dans HeroDetailPanel) |
+
+---
+
+## Hooks (`src/hooks/`)
+
+| Hook | Rôle |
+|---|---|
+| `useHeroRosterNavigation(selectedHero, setSelectedHero)` | Navigation clavier (flèches) dans la grille héros + scroll automatique. Retourne `filteredHeroesRef` à synchroniser avec la liste filtrée. |
+| `useAnimatedHeroPanel()` | Gestion des transitions d'entrée/sortie du panneau de détail héros. Retourne `{ selectedHero, renderedHero, panelState, panelDx, handleSelectHero }`. |
 
 ---
 
@@ -84,6 +101,20 @@ f_cav = β² / (α² + β² + γ²)
 f_arc = γ² / (α² + β² + γ²)
 ```
 
+### `heroCatalog.ts` — Métadonnées UI des héros
+
+Centralise toutes les métadonnées UI (chemins d'images, badges de génération, ordre d'affichage). Isolé de `heroes.ts` qui ne contient que les données de jeu.
+
+| Export | Description |
+|---|---|
+| `HERO_IMG` | Chemins d'images pour chaque `HeroName` (utilise `import.meta.env.BASE_URL`) |
+| `WIDGET_IMG` / `WIDGET_NAME` | Image et nom affichable de chaque widget |
+| `GX_HEROES` | Set des héros GX (génération spéciale) |
+| `HERO_GROUPS` | Groupes de héros par génération (`G1`…`G6`, `Epic`, `Rare`) |
+| `heroGenOrder(name)` | Rang de tri d'un héros dans l'affichage |
+| `ALL_HEROES_SORTED` | Liste complète triée selon `heroGenOrder` |
+| `GEN_BADGE` | Config de badge par génération (label + couleur Tailwind) |
+
 ### `heroes.ts` — Base de données des héros
 
 - Interface `HeroData` : `name`, `type`, `atk_bonus`, `let_bonus`, `skill_bonuses[5]`, `bonus_type`, `widget_effect`, `generation`, `skill`, `description`
@@ -103,8 +134,12 @@ f_arc = γ² / (α² + β² + γ²)
 
 ### `storage.ts` — Persistance localStorage
 
-- `loadProfiles()` / `saveProfiles()` : sérialisation JSON + migration des anciens profils (ajout de `widget_levels` si absent)
-- `createProfile(name)` : crée un profil avec stats/widgets à 0
+- `CURRENT_PROFILE_VERSION` : version courante du schéma (à incrémenter à chaque changement de format)
+- `migrateProfile(raw)` : migre un objet brut vers le format courant (ajoute les champs manquants)
+- `validateProfile(data)` : valide et migre un objet inconnu → retourne `PlayerProfile | null`
+- `loadProfiles()` / `saveProfiles()` : sérialisation JSON + migration automatique via `validateProfile`
+- `createProfile(name)` : crée un profil avec stats/widgets à 0 et `_version: CURRENT_PROFILE_VERSION`
+- `importProfileFromJson(json)` : parse + valide + réassigne un nouvel ID et timestamp
 - `defaultStats()`, `defaultWidgets()`, `defaultWidgetLevels()` : valeurs par défaut
 
 ---
@@ -126,6 +161,7 @@ Zustand avec `subscribeWithSelector`. L'état se synchronise automatiquement ave
 
 **Actions principales :**
 - `newProfile(name)` / `selectProfile(id)` / `updateProfile(partial)` / `removeProfile(id)`
+- `importProfile(profile)` — importe un profil depuis l'extérieur (JSON), l'ajoute et le sélectionne
 - `setRallyConfig(partial)` — met à jour la config rally
 - `setJoiner(slot, update)` — met à jour un slot joiner (0–3)
 - `setActiveTab(tab)` — navigation par onglet
@@ -138,11 +174,18 @@ Zustand avec `subscribeWithSelector`. L'état se synchronise automatiquement ave
 TroopType = 'inf' | 'cav' | 'arc'
 TroopTier = 'T1-T6' | 'T7-T9' | 'T10' | 'T11'
 TGLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
+TroopLevel = 'T1'…'T10' | 'TG1'…'TG8'
 
 TroopStats      // ATK% et LET% par type de troupe (inf_atk, inf_let, ...)
 WidgetStats     // Bonus widget par type de troupe
 WidgetLevels    // Niveau de widget par type (0 = non possédé, 1–10)
-PlayerProfile   // Profil complet : stats + widgets + hero leads + tier + TG
+OwnedHeroData   // Héros possédé : owned, level, stars, starSubLevel, widgetLevel, gear
+HeroGearData    // Pièce d'équipement héros : level (0–200), masteryLevel (0–20)
+GovGearData     // Équipement gouverneur : 4 pièces (helm/gloves/shroud/greaves), 0–26 chacune
+StaticBonuses   // Bonus globaux (recherche, alliance, île, pets…) par type de troupe
+TroopInventory  // Inventaire de troupes par type et niveau (Record<TroopLevel, number>)
+PlayerProfile   // Profil complet : stats + widgets + hero leads + tier + TG + héros possédés
+                //   + govGear + govCharmLevel + staticBonuses + troops + _version
 RallyConfig     // Capacité + participants + bear level + 4 joiners
 JoinerSlot      // { hero: HeroName, skillLevel: 1–5 }
 OptimalRatio    // { inf: number, cav: number, arc: number }

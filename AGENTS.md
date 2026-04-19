@@ -31,9 +31,11 @@ Before working on this codebase, load these files to understand the project:
 ### File structure
 - All types in `src/types/index.ts` — add new types here first
 - All hero data in `src/lib/heroes.ts` — `HERO_DB` + lead lists + joiner list
+- Hero UI metadata (images, badges, sort order) in `src/lib/heroCatalog.ts`
 - Game math in `src/lib/formulas.ts` — pure functions, no side effects
 - Global state in `src/store/useRallyStore.ts` — Zustand with `subscribeWithSelector`
-- UI primitives in `src/components/ui.tsx` — `SectionCard`, `Select<T>`, `Field`, `Label`
+- UI primitives in `src/components/ui.tsx` — `SectionCard`, `Select<T>`, `Field`, `NumberInput`, `MiniInput`
+- Reusable hooks in `src/hooks/` — `useHeroRosterNavigation`, `useAnimatedHeroPanel`
 
 ### Coding rules
 - Do **not** add `overflow-hidden` to `SectionCard`'s outer div — it clips dropdown menus
@@ -41,6 +43,8 @@ Before working on this codebase, load these files to understand the project:
 - `HeroName` in `types/index.ts` must be updated when adding a new hero
 - Widget dropdowns: active = `Select<number>`, inactive = `Select<string>` with `pointer-events-none opacity-40`
 - HeroSelect outside-click detection uses `click` event with `capture: true` (not `mousedown`) to avoid blocking child clicks
+- Use `importProfile` (not `updateProfile`) when importing a profile from external JSON
+- `MiniInput` (compact int input, `text-xs`) and `NumberInput` (float input, `text-sm`) are both in `ui.tsx`
 
 ### Styling
 - Dark theme: `gray-900` background, `gray-800` cards, `orange-400/500/600` accent
@@ -51,7 +55,9 @@ Before working on this codebase, load these files to understand the project:
 1. Add the name to `HeroName` in `src/types/index.ts`
 2. Add a `HeroData` entry to `HERO_DB` in `src/lib/heroes.ts`
 3. Add to the appropriate lead list (`LEAD_INF/CAV/ARC_HEROES`) or joiner list
-4. If it's a joiner with real bonuses, add to `CANDIDATES` in `JoinerRecommender.tsx`
+4. Add an image entry in `HERO_IMG` in `src/lib/heroCatalog.ts`
+5. Add to the appropriate generation group in `HERO_GROUPS` in `src/lib/heroCatalog.ts`
+6. If it's a joiner with real bonuses, add to `CANDIDATES` in `JoinerRecommender.tsx`
 
 ### Testing conventions
 - **Test files:** Colocated with source (`.test.ts`, `.test.tsx` suffix) except E2E tests in `e2e/`
