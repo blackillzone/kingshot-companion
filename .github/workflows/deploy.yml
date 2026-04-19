@@ -27,6 +27,9 @@ jobs:
       - name: Lint with Biome
         run: npm run lint:ci
 
+      - name: Run knip checks
+        run: npm run knip:ci
+
       - name: Run unit tests
         run: npm run test:all
 
