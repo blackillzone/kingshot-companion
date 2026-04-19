@@ -1,12 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <!-- Tige verte -->
-  <path d="M38 6 C38 6 36 2 32 2 C28 2 27 5 28 8 C29 11 32 12 34 10" fill="none" stroke="#2d8a2d" stroke-width="2.5" stroke-linecap="round"/>
+  <defs>
+    <linearGradient id="pepperGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff2222"/>
+      <stop offset="100%" stop-color="#8b0000"/>
+    </linearGradient>
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4ade80"/>
+      <stop offset="100%" stop-color="#166534"/>
+    </linearGradient>
+  </defs>
+  <!-- Tige -->
+  <path d="M32 8 C32 8 31 5 33 3" fill="none" stroke="#166534" stroke-width="2" stroke-linecap="round"/>
   <!-- Feuille -->
-  <path d="M34 10 C38 7 43 9 42 13 C40 17 35 14 34 10Z" fill="#3aaa3a"/>
+  <path d="M32 8 C28 4 22 5 22 9 C22 13 28 12 32 8Z" fill="url(#leafGrad)"/>
   <!-- Corps du piment -->
-  <path d="M30 11 C22 13 14 22 13 32 C12 40 16 50 22 55 C25 57 27 57 29 55 C31 57 33 57 35 55 C41 50 45 40 44 32 C43 22 38 13 30 11Z" fill="#e02020"/>
+  <path d="M32 8 C38 9 44 17 44 28 C44 38 40 47 36 53 C34 57 32 59 31 56 C30 53 27 47 26 40 C24 31 24 19 28 11 C29 9 30 8 32 8Z" fill="url(#pepperGrad)"/>
   <!-- Reflet -->
-  <path d="M22 20 C19 26 19 34 21 40" fill="none" stroke="#ff6060" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
-  <!-- Pointe -->
-  <path d="M29 55 C28 59 30 62 32 62 C34 62 36 59 35 55" fill="#c01818"/>
+  <path d="M30 13 C28 20 27 29 28 38" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity="0.35"/>
 </svg>
